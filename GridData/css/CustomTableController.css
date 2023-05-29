@@ -1,0 +1,100 @@
+.prevent-select {
+  user-select: none;
+}
+
+.control-container {
+  border: none;
+}
+
+.pcf-wrapper {
+  padding: 30px;
+}
+
+.pcf-wrapper .float-right {
+  text-align: right;
+}
+
+.pcf-wrapper .btn-red-outline,.pcf-wrapper .btn-red-outline:hover,.pcf-wrapper .btn-red-outline:active {
+  color: #1677ff;
+  border-color: #1677ff;
+  background-color: transparent !important;
+  min-width: 105px;
+  height: 35px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.pcf-wrapper .btn-blue, .pcf-wrapper .btn-blue:hover, .btn-blue:active, .btn-blue:focus {
+  min-width: 105px;
+  height: 35px;
+  background-color: #1677ff !important;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.pcf-wrapper .ant-select-selector {
+  background: #FFFFFF;
+  border: 0.5px solid #C1BDBD;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.pcf-wrapper .mb-20 {
+  margin-bottom: 20px;
+}
+
+.pcf-wrapper .mr-10 {
+  margin-right: 10px;
+}
+
+.pcf-wrapper table {
+  border: none !important;
+  border-color: transparent !important;
+}
+
+.pcf-wrapper th, .pcf-wrapper td {
+  border: none;
+  color: #000 !important;
+  font-size: 14px !important;
+  font-weight: 400;
+  padding: 11px 12px !important;
+  border-right: none !important;
+  font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+}
+
+.pcf-wrapper th, .pcf-wrapper td a{
+  color: #000 !important;
+}
+
+.pcf-wrapper td a:hover{
+  color: #1677ff  !important;
+  text-decoration: underline;
+}
+
+.pcf-wrapper .tbody tr:hover, .pcf-wrapper .tbody  .ant-table-selection-column{
+  background: rgb(237, 235, 233) !important;  
+}
+
+.pcf-wrapper .ant-table-container {
+  border-inline-start: none !important;
+  border-top: none !important;
+}
+
+.pcf-wrapper .ant-table-wrapper .ant-table-thead >tr>td { 
+  background: #ffffff !important;
+
+}
+
+.pcf-wrapper .ant-table-wrapper .ant-table-thead >tr>td {
+  background: rgb(255, 255, 255) !important;
+}
+
+.pcf-wrapper .ant-typography {
+  color: #1677ff  !important;
+}

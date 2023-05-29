@@ -1,0 +1,59 @@
+[
+  {
+    "id": "Col1",
+    "order": "name",
+    "datatype": "String"
+  },
+  {
+    "id": "Col2",
+    "order": "age",
+    "datatype": "List",
+    "data": [
+      {
+        "value": "monday",
+        "label": "Monday"
+      },
+      {
+        "value": "tuesday",
+        "label": "Tuesday"
+      },
+      {
+        "value": "wednesday",
+        "label": "Wednesday"
+      },
+      {
+        "value": "thursday",
+        "label": "Thursday"
+      },
+      {
+        "value": "friday",
+        "label": "Friday"
+      }
+    ]
+  },
+  {
+    "id": "Tier",
+    "order": "address",
+    "datatype": "List",
+    "data": [
+      {
+        "value": "Y",
+        "label": "Yes"
+      },
+      {
+        "value": "N",
+        "label": "No"
+      }
+    ]
+  },
+  {
+    "id": "Col3",
+    "order": "name2",
+    "datatype": "Numeric"
+  },
+  {
+    "id": "Col4",
+    "order": "name3",
+    "datatype": "Date"
+  }
+]
