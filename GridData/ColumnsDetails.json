@@ -2,7 +2,16 @@
   {
     "id": "Col1",
     "order": "name",
-    "datatype": "String"
+    "datatype": "String",
+    "validationData": {
+      "allowDuplicates": true,
+      "isMandatory": true,
+      "maxLength": 10,
+      "maxValue": 0,
+      "minLength": 0,
+      "minValue": 0,
+      "numberOfDecimalPlaces": 0
+    }
   },
   {
     "id": "Col2",
@@ -29,7 +38,16 @@
         "value": "friday",
         "label": "Friday"
       }
-    ]
+    ],
+    "validationData": {
+      "allowDuplicates": false,
+      "isMandatory": true,
+      "maxLength": 0,
+      "maxValue": 0,
+      "minLength": 0,
+      "minValue": 0,
+      "numberOfDecimalPlaces": 0
+    }
   },
   {
     "id": "Tier",
@@ -44,16 +62,43 @@
         "value": "N",
         "label": "No"
       }
-    ]
+    ],
+    "validationData": {
+      "allowDuplicates": true,
+      "isMandatory": true,
+      "maxLength": 0,
+      "maxValue": 0,
+      "minLength": 0,
+      "minValue": 0,
+      "numberOfDecimalPlaces": 0
+    }
   },
   {
     "id": "Col3",
     "order": "name2",
-    "datatype": "Numeric"
+    "datatype": "Numeric",
+    "validationData": {
+      "allowDuplicates": false,
+      "isMandatory": true,
+      "maxLength": 0,
+      "maxValue": 5,
+      "minLength": 0,
+      "minValue": 1,
+      "numberOfDecimalPlaces": 0
+    }
   },
   {
     "id": "Col4",
     "order": "name3",
-    "datatype": "Date"
+    "datatype": "Date",
+    "validationData": {
+      "allowDuplicates": true,
+      "isMandatory": true,
+      "maxLength": 0,
+      "maxValue": 0,
+      "minLength": 0,
+      "minValue": 0,
+      "numberOfDecimalPlaces": 0
+    }
   }
 ]
