@@ -3,7 +3,8 @@ import { Button, Form, Table, notification, Checkbox } from "antd";
 import { generateColumns } from "../utils/GenerateColumns";
 import ColumnsDetails from "../ColumnsDetails.json";
 import { fetchRecordId, fetchRequest, saveRequest } from "../utils/xrmapi/api";
-import { GYDE_SURVEY_TEMPLATE } from "../constants/Constants";
+import { ERROR_COLOUR_CODE, GYDE_SURVEY_TEMPLATE, SUCCESS_COLOUR_CODE } from "../constants/Constants";
+import moment from "moment";
 
 interface Item {
   key: string;
@@ -23,14 +24,13 @@ const CustomTable: React.FC = () => {
   const [form] = Form.useForm();
   const [count, setCount] = useState(0);
   const [questionId, setQuestionId] = useState("");
-  const [editingKey, setEditingKey] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState<any>([]);
   const [dynamicColumns, setDynamicColumns] = useState<any>([]);
   const [columns, setColumns] = useState<any>([]);
   const initialValues = {};
   const [inputValues, setInputValues] = useState<any>([]);
   const [isDisabled, setIsDisabled] = useState(false);
-  // const isEditing = (record: Item) => record.key === editingKey;
+  const [loading, setLoading] = useState(false);
   const xx: any = [
     {
       Col1: "abcda",
@@ -49,15 +49,15 @@ const CustomTable: React.FC = () => {
   ];
 
   // SAMPLE FOR DYNAMIC MESSAGES USE
-  const [copyNotAllowed, setCopyNotAllowed] = useState<string>(
-    "Copying questions is not allowed on this webpage"
-  );
-  const [apiNotSupport, setApiNotSupport] = useState<string>(
-    "Permissions API not supported"
-  );
-  const [grantPermission, setGrantPermission] = useState<string>(
-    "You need to grant permission to copy on this webpage"
-  );
+  const [numberValueValidation, setNumberValueValidation] = useState<string>("Number must have a value between $ and $$");
+  const [stringLengthValidation, setStringLengthValidation] = useState<string>("Input must have a length between $ and $$");
+  const [requiredError, setRequiredError] = useState<string>("Required Field");
+  const [decimalValidation, setDecimalValidation] = useState<string>("Number can have a maximum of $ decimal places");
+  const [duplicateError, setDuplicateError] = useState<string>("Duplicates not allowed");
+  const [saveDataNotify, setSaveDataNotify] = useState<string>("Data saved Successfully");
+  const [saveDataError, setSaveDataError] = useState<string>("Saving Error. Please try again");
+  const [commonError, setCommonError] = useState<string>("Something went wrong. Please try again");
+
 
   const loadResourceString = async () => {
     const url =
@@ -70,11 +70,8 @@ const CustomTable: React.FC = () => {
       const response = await fetch(`${webResourceUrl}`);
       const data = await response.text();
       // CREATE YOUR OWN KEYS
-      const filterKeys = [
-        "copyingnotallowed",
-        "permissionapinotsupport",
-        "grantpermission",
-      ]; // Replace with the key you want to filter
+      const filterKeys = ['numberValueValidation', 'stringLengthValidation', 'requiredError','decimalValidation','duplicateError','saveDataNotify','saveDataError','commonError'];
+       // Replace with the key you want to filter
       filterKeys.map((filterKey: string, index: number) => {
         const parser = new DOMParser();
         // Parse the XML string
@@ -86,22 +83,36 @@ const CustomTable: React.FC = () => {
 
         // SET MESSAGES ACCORDING TO YOUR ORDER
         if (index === 0) {
-          setCopyNotAllowed(value);
+          setNumberValueValidation(value)
         }
         if (index === 1) {
-          setApiNotSupport(value);
+          setStringLengthValidation(value)
         }
         if (index === 2) {
-          setGrantPermission(value);
+          setRequiredError(value)
+        }
+        if (index === 3) {
+          setDecimalValidation(value)
+        }
+        if (index === 4) {
+          setDuplicateError(value)
+        }
+        if (index === 5) {
+          setSaveDataNotify(value)
+        }
+        if (index === 6) {
+          setSaveDataError(value)
+        }if (index === 7) {
+          setCommonError(value)
         }
       });
-      // this.setState({ data });
     } catch (error) {
       console.error("Error loading data:", error);
     }
   };
 
   const allDataFetch = async () => {
+    setLoading(true);
     await fetchRecordId()
       .then(async (id) => {
         setQuestionId(id?.data);
@@ -126,27 +137,34 @@ const CustomTable: React.FC = () => {
                 key: num,
               };
             });
+            setLoading(false);
             setDynamicColumns(jsonParse || []);
             setDataSource(newData || []);
             setInputValues(newData || []);
-            setColumnsData(jsonParse || [], newData || [], form);
+            setColumnsData(jsonParse || [], newData || [], form,isDisabled);
             setCount(count + 1);
           })
           .catch((err) => {
             // setColumnsData(ColumnsDetails, xx,form);
             console.log("error when column fetching", err);
-            notification.error({
-              message: "Error",
-              description: "Something went wrong.. Please try again",
-            });
+            setLoading(false);
+            let notificationType = "ERROR";
+            const msg = <span style={{color:ERROR_COLOUR_CODE}}>{commonError}</span>;
+            window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(msg, notificationType);
+            setTimeout(function () {
+              window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
+              }, 10000);
           });
         console.log("grid data....", getGridData);
       })
       .catch(() => {
-        notification.error({
-          message: "Error",
-          description: "Something went wrong.. Please try again",
-        });
+        setLoading(false);
+        let notificationType = "ERROR";
+        const msg = <span style={{color: ERROR_COLOUR_CODE}}>{commonError}</span>;
+        window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(msg, notificationType);
+        setTimeout(function () {
+          window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
+        }, 10000);
       });
   };
 
@@ -197,6 +215,10 @@ const CustomTable: React.FC = () => {
   }, [inputValues]);
 
   useEffect(() => {
+    setColumnsData(dynamicColumns || [], dataSource || [], form, isDisabled);   
+  }, [isDisabled])
+
+  useEffect(() => {
     setDynamicColumns(ColumnsDetails);
     setDataSource(xx);
     setInputValues(xx);
@@ -210,23 +232,16 @@ const CustomTable: React.FC = () => {
     disable?: boolean
   ) => {
     const columns = generateColumns(
-      // for crm builds uncomment this
       dynamicColumns,
-      // for local uncomment this
-      // ColumnsDetails,
       dataSource,
       formData,
       initialValues,
-      // handleInputChange,
       inputValues,
-      disable
+      {numberValueValidation,stringLengthValidation,requiredError,decimalValidation,duplicateError},
+      disable,
     );
     setColumns(columns || []);
   };
-
-  useEffect(() => {
-    setColumnsData(ColumnsDetails, xx, form, isDisabled);   
-  }, [isDisabled])
 
   const arrayToObj = (arr: string[]) => {
     const obj: { [key: string]: any } = {};
@@ -247,6 +262,7 @@ const CustomTable: React.FC = () => {
     onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
       setSelectedRowKeys(selectedRowKeys);
     },
+    columnWidth:15
   };
 
   const cancel = () => {
@@ -264,22 +280,37 @@ const CustomTable: React.FC = () => {
   };
 
   const handleSave = (data: any) => {
-    const convertedArray = Object.values(data);
+    const convertedArray:any = Object.values(data);
     const records = JSON.stringify(convertedArray);
+
+    for (let index = 0; index < convertedArray.length; index++) {
+      const obj : any = convertedArray[index];
+      for (let key in obj ) {
+        console.log(`${key}: ${typeof obj[key]}`);
+        if(typeof obj[key] == "object" ){
+          convertedArray[index][key] = moment(obj[key]?.$d.toDateString()).format("YYYY-MM-DD") 
+        }
+      }     
+    }
     saveRequest(GYDE_SURVEY_TEMPLATE, questionId, records)
       .then((res) => {
         if (!res?.error) {
-          notification.success({
-            message: "Success",
-            description: "Data saved Successfully.",
-          });
+          let notificationType = "INFO";
+          const msg = <span style={{color:SUCCESS_COLOUR_CODE}}>{saveDataNotify}</span>;
+          allDataFetch();
+          window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(msg, notificationType);
+          setTimeout(function () {
+          window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
+          }, 10000);
         }
       })
       .catch((err) => {
-        notification.error({
-          message: "Error",
-          description: "Saving Error.. Please try again",
-        });
+        let notificationType = "ERROR";
+        const msg = <span style={{color:ERROR_COLOUR_CODE}}>{saveDataError}</span>;
+        window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(msg, notificationType);
+        setTimeout(function () {
+          window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
+          }, 10000);
       });
   };
 
@@ -322,18 +353,22 @@ const CustomTable: React.FC = () => {
             Delete
           </Button>
         </div>
-        <Checkbox
-          defaultChecked={false}
-          onChange={() => setIsDisabled(!isDisabled)}
-        >
-          Lock Data
-        </Checkbox>
+        <>
+          <Checkbox
+            defaultChecked={false}
+            onChange={() => setIsDisabled(!isDisabled)}
+          >
+            Lock Data
+          </Checkbox>
+        </>
         <Table
-          // rowClassName={() => "editable-row"}
           columns={columns}
           dataSource={dataSource}
           rowSelection={{ ...rowSelection }}
           pagination={false}
+          scroll={{ x: 1500, y: 200 }}
+          sticky
+          loading={loading}
           onRow={(record) =>
             isDisabled
               ? {}

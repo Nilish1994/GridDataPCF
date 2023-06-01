@@ -6,12 +6,43 @@
   border: none;
 }
 
-.pcf-wrapper {
-  padding: 30px;
+.pcf-wrapper .ant-table-cell .ant-form-item {
+  margin-bottom: 0 !important;
+}
+
+.control-pane {
+  flex: 1 !important;       
+  width: 80% !important;
+}
+
+.io-pane {
+  flex: 1 !important;    
+  width: 20% !important;
+}
+
+.pcf-wrapper .ant-input-number {
+  width: 100%
+}
+
+.pcf-wrapper .ant-picker {
+  width: 100%
+}
+
+.pcf-wrapper  .ant-form-item .ant-form-item-explain-error {
+  font-size: 10px;
+}
+
+.pcf-wrapper .ant-table-tbody {
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .pcf-wrapper .float-right {
   text-align: right;
+}
+
+.pcf-wrapper table  tr {
+  vertical-align: top;
 }
 
 .pcf-wrapper .btn-red-outline,.pcf-wrapper .btn-red-outline:hover,.pcf-wrapper .btn-red-outline:active {
@@ -36,6 +67,7 @@
   font-weight: 500;
   outline: none !important;
   box-shadow: none !important;
+  /* margin-top: 10px; */
 }
 
 .pcf-wrapper .ant-select-selector {
@@ -51,12 +83,14 @@
 
 .pcf-wrapper .mr-10 {
   margin-right: 10px;
+  margin-top: 25px;
 }
 
 .pcf-wrapper table {
   border: none !important;
   border-color: transparent !important;
 }
+
 
 .pcf-wrapper th, .pcf-wrapper td {
   border: none;
@@ -86,7 +120,7 @@
   border-top: none !important;
 }
 
-.pcf-wrapper .ant-table-wrapper .ant-table-thead >tr>td { 
+.pcf-wrapper .ant-table-wrapper .ant-table-thead >tr>td {
   background: #ffffff !important;
 
 }

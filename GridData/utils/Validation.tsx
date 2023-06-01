@@ -1,6 +1,7 @@
 import moment from "moment";
+import {stringReplace} from "../utils/StringReplace"
 
-export const validationHandler = (_: any, value: any, validationData: any, isDate?: boolean, allData?: any) => {
+export const validationHandler = (_: any, value: any, validationData: any, isDate?: boolean, allData?: any,messages?:any) => {
   console.log('validation data ===> ', validationData);
 
   const stringValue = value;
@@ -9,7 +10,7 @@ export const validationHandler = (_: any, value: any, validationData: any, isDat
   // Check if the value is null or empty
   if (validationData?.isMandatory) {
     if (stringValue == null || stringValue === "") {
-      return Promise.reject('Required');
+      return Promise.reject(messages?.requiredError);
     }
   }
 
@@ -19,13 +20,15 @@ export const validationHandler = (_: any, value: any, validationData: any, isDat
       stringValue?.length < validationData?.minLength ||
       stringValue?.length > validationData?.maxLength + 1
     ) {
-      return Promise.reject(`Number must have a length between ${validationData?.minLength} and ${validationData?.maxLength}`);
+      const msg = stringReplace(messages?.stringLengthValidation ,validationData?.minLength,validationData?.maxLength );
+      return Promise.reject(msg);
     }
   }
 
   if (!(validationData.minValue == 0)) {
     if (value < validationData?.minValue || value > validationData?.maxValue) {
-      return Promise.reject(`Number must be between ${validationData?.minValue} and ${validationData?.maxValue}`)
+      const msg = stringReplace(messages?.numberValueValidation ,validationData?.minValue,validationData?.maxValue);
+      return Promise.reject(msg);
     }
    }
 
@@ -33,7 +36,8 @@ export const validationHandler = (_: any, value: any, validationData: any, isDat
     const decimalPoints = (value.toString().split(".")[1] || "").length;
 
     if (decimalPoints > validationData?.numberOfDecimalPlaces) {
-      return Promise.reject(`Number can have a maximum of ${validationData?.numberOfDecimalPlaces} decimal places`)
+      const msg = stringReplace(messages?.decimalValidation ,validationData?.numberOfDecimalPlaces);
+      return Promise.reject(msg)
     }
   }
 
@@ -45,12 +49,15 @@ export const validationHandler = (_: any, value: any, validationData: any, isDat
       let count = 0;
       if (allData && allData.length > 0) {
         allData.map((dataValue: any) => {
+          if(typeof dataValue[columnName] === "object"){
+            dataValue[columnName] = moment(dataValue[columnName]?.$d.toDateString()).format("YYYY-MM-DD");
+          }
           if ( moment(dataValue[columnName]).format('YYYY-MM-DD') == moment(value).format('YYYY-MM-DD')) {
             count++;
           }
         });
         if (count > 1) {
-          return Promise.reject("Duplicates not allowed")
+          return Promise.reject(messages?.duplicateError)
         }
       }
       
@@ -65,7 +72,7 @@ export const validationHandler = (_: any, value: any, validationData: any, isDat
           }
         });
         if (count > 1) {
-          return Promise.reject("Duplicates not allowed")
+          return Promise.reject(messages?.duplicateError)
         }
       } 
     }

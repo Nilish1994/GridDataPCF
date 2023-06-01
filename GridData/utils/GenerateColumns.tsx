@@ -38,16 +38,18 @@ export const generateColumns = (
   form?: any,
   initialValues?: any,
   validationInputs?: any,
+  messages?:any,
   isDisabled?: any
 ) => {
   const dynamicColumns: ColumnsType<any> = columnConfig.map(
     (column: any, num: number) => {
-      const { id, order, datatype, data, validationData } = column;
+      const { id, order, datatype, data, validationData, width } = column;
 
       console.log("isDisabled", isDisabled);
-
+      let colWidth = 0;
       let columnRender;
       if (datatype === String.name) {
+        colWidth = width != undefined && width !=null ? width : 70;
         columnRender = (item: any, record: any, index: number) => {
           return (
             <Form.Item
@@ -62,7 +64,8 @@ export const generateColumns = (
                       value,
                       validationData,
                       false,
-                      validationInputs
+                      validationInputs,
+                      messages
                     );
                   },
                 },
@@ -81,6 +84,7 @@ export const generateColumns = (
           );
         };
       } else if (datatype === List.name) {
+        colWidth = width != undefined && width !=null ? width : 70;
         columnRender = (item: any, record: any, index: number) => {
           const options: any = filteredOptions(
             data,
@@ -94,7 +98,7 @@ export const generateColumns = (
               name={[index, `${id}`]}
               initialValue={response[index]?.[id]}
               rules={[
-                { required: validationData?.isMandatory, message: "Required" },
+                { required: validationData?.isMandatory, message: messages?.requiredError },
               ]}
             >
               <Select
@@ -107,6 +111,7 @@ export const generateColumns = (
           );
         };
       } else if (datatype === Numeric.name) {
+        colWidth = width != undefined && width !=null ? width : 40;
         columnRender = (item: any, record: any, index: number) => {
           return (
             <Form.Item
@@ -115,7 +120,6 @@ export const generateColumns = (
               initialValue={response[index]?.[id]}
               // validateTrigger={["onChange", "onBlur"]} // Add validateTrigger to trigger validation on input change and blur
               rules={[
-                // { required: true, message: "Required" },
                 {
                   validator: (_: any, value: any) => {
                     return validationHandler(
@@ -123,7 +127,8 @@ export const generateColumns = (
                       value,
                       validationData,
                       false,
-                      validationInputs
+                      validationInputs,
+                      messages
                     );
                   },
                 },
@@ -131,8 +136,6 @@ export const generateColumns = (
             >
               <InputNumber
                 placeholder={"Insert a number"}
-                // min={0}
-                // max={5}
                 defaultValue={response[index]?.[id]}
                 value={item || response[index]?.[id]}
                 disabled={isDisabled}
@@ -141,6 +144,7 @@ export const generateColumns = (
           );
         };
       } else if (datatype === Date.name) {
+        colWidth = width != undefined && width !=null ? width : 40;
         columnRender = (item: any, record: any, index: number) => {
           // Parse the default date string into a moment object
           const date: any = moment();
@@ -156,10 +160,11 @@ export const generateColumns = (
                   validator: (_: any, value: any) => {
                     return validationHandler(
                       _,
-                      value,
+                      moment(value?.$d.toDateString()).format("YYYY-MM-DD"),
                       validationData,
                       true,
-                      validationInputs
+                      validationInputs,
+                      messages
                     );
                   },
                 },
@@ -179,6 +184,7 @@ export const generateColumns = (
 
       return {
         title: id,
+        width:colWidth,
         dataIndex: order,
         render: columnRender,
       };
