@@ -49,7 +49,7 @@ export const generateColumns = (
       console.log("isDisabled", isDisabled);
       let colWidth = 0;
       let columnRender;
-      const title :any = <span>{id}   <Checkbox  defaultChecked={false} onChange={() => setIsDisabled(!isDisabled)}>Lock Data</Checkbox></span>;
+      const title :any = <span className="flex-wrap"><span>{id}</span><Checkbox  defaultChecked={false} onChange={() => setIsDisabled(!isDisabled)}>Lock Data</Checkbox></span>;
       if (datatype === String.name) {
         colWidth = width != undefined && width !=null ? width : 70;
         columnRender = (item: any, record: any, index: number) => {
