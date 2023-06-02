@@ -43,15 +43,22 @@ export const generateColumns = (
   setIsDisabled?:any
 ) => {
   const dynamicColumns: ColumnsType<any> = columnConfig.map(
-    (column: any, num: number) => {
+    (column: any, num: any) => {
       const { id, order, datatype, data, validationData, width } = column;
 
-      console.log("isDisabled", isDisabled);
       let colWidth = 0;
       let columnRender;
-      const title :any = <span className="flex-wrap"><span>{id}</span><Checkbox  defaultChecked={false} onChange={() => setIsDisabled(!isDisabled)}>Lock Data</Checkbox></span>;
+      const title :any = (
+      <span key={order} className="flex-wrap"> {id}   
+        <Checkbox  
+          key={id}
+          defaultChecked={false}
+          onChange={(e) => setIsDisabled( id, e.target.checked)}>
+            Lock Data
+        </Checkbox>
+      </span>);
       if (datatype === String.name) {
-        colWidth = width != undefined && width !=null ? width : 70;
+        colWidth = width != undefined && width != null && !Number.isNaN(width) ? width : 70;
         columnRender = (item: any, record: any, index: number) => {
           return (
             <Form.Item
@@ -80,13 +87,13 @@ export const generateColumns = (
                 placeholder={"Please insert string"}
                 // defaultValue={response[index]?.[id]}
                 value={item || response[index]?.[id]}
-                disabled={isDisabled}
+                disabled={isDisabled?.some((item:any) => item[id])}
               />
             </Form.Item>
           );
         };
       } else if (datatype === List.name) {
-        colWidth = width != undefined && width !=null ? width : 70;
+        colWidth = width != undefined && width !=null && !Number.isNaN(width) ? width : 70;
         columnRender = (item: any, record: any, index: number) => {
           const options: any = filteredOptions(
             data,
@@ -107,13 +114,13 @@ export const generateColumns = (
                 placeholder={"Select a option"}
                 options={options}
                 value={item || response[index]?.[id]} // new add
-                disabled={isDisabled}
+                // disabled={isDisabled}
               />
             </Form.Item>
           );
         };
       } else if (datatype === Numeric.name) {
-        colWidth = width != undefined && width !=null ? width : 40;
+        colWidth = width != undefined && width !=null && !Number.isNaN(width) ? width : 40;
         columnRender = (item: any, record: any, index: number) => {
           return (
             <Form.Item
@@ -140,13 +147,13 @@ export const generateColumns = (
                 placeholder={"Insert a number"}
                 defaultValue={response[index]?.[id]}
                 value={item || response[index]?.[id]}
-                disabled={isDisabled}
+                // disabled={isDisabled}
               />
             </Form.Item>
           );
         };
       } else if (datatype === Date.name) {
-        colWidth = width != undefined && width !=null ? width : 40;
+        colWidth = width != undefined && width !=null && !Number.isNaN(width) ? width : 40;
         columnRender = (item: any, record: any, index: number) => {
           // Parse the default date string into a moment object
           const date: any = moment();
@@ -177,7 +184,7 @@ export const generateColumns = (
                 placeholder={`Select a date`}
                 format={"DD MMM, YYYY"}
                 value={item || defaultDayjs}
-                disabled={isDisabled}
+                // disabled={isDisabled}
               />
             </Form.Item>
           );

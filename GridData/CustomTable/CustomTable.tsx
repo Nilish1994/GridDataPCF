@@ -19,6 +19,10 @@ declare global {
   }
 }
 
+interface MyData {
+  [key: string]: boolean;
+}
+
 const CustomTable: React.FC = () => {
   const [dataSource, setDataSource] = useState<any>([]);
   const [form] = Form.useForm();
@@ -29,8 +33,9 @@ const CustomTable: React.FC = () => {
   const [columns, setColumns] = useState<any>([]);
   const initialValues = {};
   const [inputValues, setInputValues] = useState<any>([]);
-  const [isDisabled, setIsDisabled] = useState(false);
+  const [isDisabled, setIsDisabled] = useState<MyData[]>([]);
   const [loading, setLoading] = useState(false);
+
   const xx: any = [
     {
       Col1: "abcda",
@@ -141,7 +146,8 @@ const CustomTable: React.FC = () => {
             setDynamicColumns(jsonParse || []);
             setDataSource(newData || []);
             setInputValues(newData || []);
-            setColumnsData(jsonParse || [], newData || [], form,isDisabled);
+            const lockData :any = isDisabled ;
+            setColumnsData(jsonParse || [], newData || [], form, lockData);
             setCount(count + 1);
           })
           .catch((err) => {
@@ -215,7 +221,8 @@ const CustomTable: React.FC = () => {
   }, [inputValues]);
 
   useEffect(() => {
-    setColumnsData(dynamicColumns || [], dataSource || [], form, isDisabled);   
+    const lockData :any = isDisabled ;
+    setColumnsData(dynamicColumns || [], dataSource || [], form, lockData);   
   }, [isDisabled])
 
   useEffect(() => {
@@ -224,6 +231,26 @@ const CustomTable: React.FC = () => {
     setInputValues(xx);
     setColumnsData(ColumnsDetails, xx, form);
   }, []);
+
+  const handleLockData = (columnName: string, value: boolean) => {
+    setIsDisabled(() => {
+      const newData = [...isDisabled];
+      const foundIndex = newData.findIndex((item) => item[columnName]);
+      if (foundIndex !== -1) {
+        if (value) {
+          // Update existing item if value is checked
+          newData[foundIndex] = { ...newData[foundIndex], [columnName]: value };
+        } else {
+          // Remove existing item if value is unchecked
+          newData.splice(foundIndex, 1);
+        }
+      } else {
+        // Add new item if value is checked
+        newData.push({ [columnName]: value });
+      }
+      return newData;
+    });
+  }
 
   const setColumnsData = (
     dynamicColumns: any,
@@ -239,7 +266,7 @@ const CustomTable: React.FC = () => {
       inputValues,
       {numberValueValidation,stringLengthValidation,requiredError,decimalValidation,duplicateError},
       disable,
-      setIsDisabled
+      handleLockData
     );
     setColumns(columns || []);
   };
@@ -341,7 +368,7 @@ const CustomTable: React.FC = () => {
             onClick={handleAdd}
             type="primary"
             className="btn-blue mr-10"
-            disabled={isDisabled}
+            // disabled={isDisabled}
           >
             Add a row
           </Button>
@@ -349,7 +376,7 @@ const CustomTable: React.FC = () => {
             onClick={() => handleDelete(selectedRowKeys)}
             type="primary"
             className="btn-red-outline"
-            disabled={isDisabled}
+            // disabled={isDisabled}
           >
             Delete
           </Button>
@@ -387,7 +414,7 @@ const CustomTable: React.FC = () => {
               type="primary"
               htmlType="submit"
               className="btn-blue mr-10"
-              disabled={isDisabled}
+              // disabled={isDisabled}
             >
               Save
             </Button>
@@ -396,7 +423,7 @@ const CustomTable: React.FC = () => {
               onClick={() => cancel()}
               type="primary"
               className="btn-red-outline"
-              disabled={isDisabled}
+              // disabled={isDisabled}
             >
               Cancel
             </Button>
