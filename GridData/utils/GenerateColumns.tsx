@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import type { ColumnsType } from "antd/es/table";
-import { DatePicker, InputNumber, Input, Select, Form, Tooltip } from "antd";
+import { DatePicker, InputNumber, Input, Select, Form, Tooltip, Checkbox } from "antd";
 import { Date, List, Numeric, String } from "../constants/Constants";
 import { validationHandler } from "./Validation";
 import dayjs, { Dayjs } from "dayjs";
@@ -39,7 +39,8 @@ export const generateColumns = (
   initialValues?: any,
   validationInputs?: any,
   messages?:any,
-  isDisabled?: any
+  isDisabled?: any,
+  setIsDisabled?:any
 ) => {
   const dynamicColumns: ColumnsType<any> = columnConfig.map(
     (column: any, num: number) => {
@@ -48,6 +49,7 @@ export const generateColumns = (
       console.log("isDisabled", isDisabled);
       let colWidth = 0;
       let columnRender;
+      const title :any = <span>{id}   <Checkbox  defaultChecked={false} onChange={() => setIsDisabled(!isDisabled)}>Lock Data</Checkbox></span>;
       if (datatype === String.name) {
         colWidth = width != undefined && width !=null ? width : 70;
         columnRender = (item: any, record: any, index: number) => {
@@ -183,7 +185,7 @@ export const generateColumns = (
       }
 
       return {
-        title: id,
+        title: datatype === String.name ? title :  id,
         width:colWidth,
         dataIndex: order,
         render: columnRender,

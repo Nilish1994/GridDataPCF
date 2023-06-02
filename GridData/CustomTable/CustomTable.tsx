@@ -229,7 +229,7 @@ const CustomTable: React.FC = () => {
     dynamicColumns: any,
     dataSource: any,
     formData: any,
-    disable?: boolean
+    disable?: boolean,
   ) => {
     const columns = generateColumns(
       dynamicColumns,
@@ -239,6 +239,7 @@ const CustomTable: React.FC = () => {
       inputValues,
       {numberValueValidation,stringLengthValidation,requiredError,decimalValidation,duplicateError},
       disable,
+      setIsDisabled
     );
     setColumns(columns || []);
   };
@@ -354,19 +355,19 @@ const CustomTable: React.FC = () => {
           </Button>
         </div>
         <>
-          <Checkbox
+          {/* <Checkbox
             defaultChecked={false}
             onChange={() => setIsDisabled(!isDisabled)}
           >
             Lock Data
-          </Checkbox>
+          </Checkbox> */}
         </>
         <Table
           columns={columns}
           dataSource={dataSource}
           rowSelection={{ ...rowSelection }}
           pagination={false}
-          scroll={{ x: 1500, y: 200 }}
+          scroll={{ x: 1500, y: 400 }}
           sticky
           loading={loading}
           onRow={(record) =>
