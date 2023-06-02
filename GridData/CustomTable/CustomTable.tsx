@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Table, notification, Checkbox } from "antd";
+import { Button, Form, Table, } from "antd";
 import { generateColumns } from "../utils/GenerateColumns";
 import ColumnsDetails from "../ColumnsDetails.json";
 import { fetchRecordId, fetchRequest, saveRequest } from "../utils/xrmapi/api";
@@ -155,8 +155,8 @@ const CustomTable: React.FC = () => {
             console.log("error when column fetching", err);
             setLoading(false);
             let notificationType = "ERROR";
-            const msg = <span style={{color:ERROR_COLOUR_CODE}}>{commonError}</span>;
-            window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(msg, notificationType);
+            // const msg = <span style={{color:ERROR_COLOUR_CODE}}>{commonError}</span>;
+            window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(commonError, notificationType);
             setTimeout(function () {
               window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
               }, 10000);
@@ -166,8 +166,8 @@ const CustomTable: React.FC = () => {
       .catch(() => {
         setLoading(false);
         let notificationType = "ERROR";
-        const msg = <span style={{color: ERROR_COLOUR_CODE}}>{commonError}</span>;
-        window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(msg, notificationType);
+        // const msg = <span style={{color: ERROR_COLOUR_CODE}}>{commonError}</span>;
+        window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(commonError, notificationType);
         setTimeout(function () {
           window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
         }, 10000);
@@ -324,9 +324,9 @@ const CustomTable: React.FC = () => {
       .then((res) => {
         if (!res?.error) {
           let notificationType = "INFO";
-          const msg = <span style={{color:SUCCESS_COLOUR_CODE}}>{saveDataNotify}</span>;
+          // const msg = <span style={{color:SUCCESS_COLOUR_CODE}}>{saveDataNotify}</span>;
           allDataFetch();
-          window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(msg, notificationType);
+          window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(saveDataNotify, notificationType);
           setTimeout(function () {
           window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
           }, 10000);
@@ -334,8 +334,8 @@ const CustomTable: React.FC = () => {
       })
       .catch((err) => {
         let notificationType = "ERROR";
-        const msg = <span style={{color:ERROR_COLOUR_CODE}}>{saveDataError}</span>;
-        window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(msg, notificationType);
+        // const msg = <span style={{color:ERROR_COLOUR_CODE}}>{saveDataError}</span>;
+        window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(saveDataError, notificationType);
         setTimeout(function () {
           window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
           }, 10000);
@@ -381,14 +381,7 @@ const CustomTable: React.FC = () => {
             Delete
           </Button>
         </div>
-        <>
-          {/* <Checkbox
-            defaultChecked={false}
-            onChange={() => setIsDisabled(!isDisabled)}
-          >
-            Lock Data
-          </Checkbox> */}
-        </>
+
         <Table
           columns={columns}
           dataSource={dataSource}
