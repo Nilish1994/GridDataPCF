@@ -48,17 +48,18 @@ export const generateColumns = (
 
       let colWidth = 0;
       let columnRender;
-      const title :any = (
-      <span key={order} className="flex-wrap"> {id}   
-        <Checkbox  
-          key={id}
-          defaultChecked={false}
-          onChange={(e) => setIsDisabled( id, e.target.checked)}>
-            Lock Data
-        </Checkbox>
-      </span>);
+      let title :any = '';
       if (datatype === String.name) {
-        colWidth = width != undefined && width != null && !Number.isNaN(width) ? width : 70;
+        title = (
+          <span key={order} className="flex-wrap"> {id}   
+            <Checkbox  
+              key={id}
+              defaultChecked={!column?.iseditable}
+              onChange={(e) => setIsDisabled( id, e.target.checked)}>
+                Lock Data
+            </Checkbox>
+          </span>);
+        colWidth = width  ? width : 70;
         columnRender = (item: any, record: any, index: number) => {
           return (
             <Form.Item
@@ -80,20 +81,20 @@ export const generateColumns = (
                 },
               ]}
             >
-              <Tooltip
+              {/* <Tooltip
                 title={form.getFieldError([index, `${id}`])?.join(" ")}
-              ></Tooltip>
+              ></Tooltip> */}
               <Input
                 placeholder={"Please insert string"}
                 // defaultValue={response[index]?.[id]}
                 value={item || response[index]?.[id]}
-                disabled={isDisabled?.some((item:any) => item[id])}
+                // disabled={isDisabled?.some((item:any) => item[id])}
               />
             </Form.Item>
           );
         };
       } else if (datatype === List.name) {
-        colWidth = width != undefined && width !=null && !Number.isNaN(width) ? width : 70;
+        colWidth = width   ? width : 70;
         columnRender = (item: any, record: any, index: number) => {
           const options: any = filteredOptions(
             data,
@@ -120,7 +121,7 @@ export const generateColumns = (
           );
         };
       } else if (datatype === Numeric.name) {
-        colWidth = width != undefined && width !=null && !Number.isNaN(width) ? width : 40;
+        colWidth = width   ? width : 40;
         columnRender = (item: any, record: any, index: number) => {
           return (
             <Form.Item
@@ -153,7 +154,7 @@ export const generateColumns = (
           );
         };
       } else if (datatype === Date.name) {
-        colWidth = width != undefined && width !=null && !Number.isNaN(width) ? width : 40;
+        colWidth = width   ? width : 40;
         columnRender = (item: any, record: any, index: number) => {
           // Parse the default date string into a moment object
           const date: any = moment();
@@ -192,7 +193,7 @@ export const generateColumns = (
       }
 
       return {
-        title: datatype === String.name ? title :  id,
+        title: datatype === String.name ? title : id,    
         width:colWidth,
         dataIndex: order,
         render: columnRender,

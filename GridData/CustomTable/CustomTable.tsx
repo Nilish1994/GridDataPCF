@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Form, Table, } from "antd";
 import { generateColumns } from "../utils/GenerateColumns";
 import ColumnsDetails from "../ColumnsDetails.json";
-import { fetchRecordId, fetchRequest, saveRequest } from "../utils/xrmapi/api";
+import { fetchRecordId, fetchRequest, saveColumnData, saveRequest } from "../utils/xrmapi/api";
 import { ERROR_COLOUR_CODE, GYDE_SURVEY_TEMPLATE, SUCCESS_COLOUR_CODE } from "../constants/Constants";
 import moment from "moment";
 
@@ -19,10 +19,6 @@ declare global {
   }
 }
 
-interface MyData {
-  [key: string]: boolean;
-}
-
 const CustomTable: React.FC = () => {
   const [dataSource, setDataSource] = useState<any>([]);
   const [form] = Form.useForm();
@@ -33,7 +29,7 @@ const CustomTable: React.FC = () => {
   const [columns, setColumns] = useState<any>([]);
   const initialValues = {};
   const [inputValues, setInputValues] = useState<any>([]);
-  const [isDisabled, setIsDisabled] = useState<MyData[]>([]);
+  const [lockData, setLockData] = useState<any>([]);
   const [loading, setLoading] = useState(false);
 
   const xx: any = [
@@ -146,12 +142,10 @@ const CustomTable: React.FC = () => {
             setDynamicColumns(jsonParse || []);
             setDataSource(newData || []);
             setInputValues(newData || []);
-            const lockData :any = isDisabled ;
             setColumnsData(jsonParse || [], newData || [], form, lockData);
             setCount(count + 1);
           })
           .catch((err) => {
-            // setColumnsData(ColumnsDetails, xx,form);
             console.log("error when column fetching", err);
             setLoading(false);
             let notificationType = "ERROR";
@@ -174,79 +168,70 @@ const CustomTable: React.FC = () => {
       });
   };
 
-  // useEffect(() => {
-  //   allDataFetch();
+  useEffect(() => {
+    allDataFetch();
 
-  //   // CALL WEBRESOURCES
-  //   loadResourceString();
-  //   // form.setFieldsValue({xx});
-  //   // fetchRecordId()
-  //   //   .then((id) => {
-  //   //     setQuestionId(id?.data);
-  //   //     console.log("record id..", id);
-  //   //     const getGridData = fetchRequest(
-  //   //       GYDE_SURVEY_TEMPLATE,
-  //   //       id?.data,
-  //   //       "?$select=gyde_name,gyde_jsoncolumn,gyde_jsondata"
-  //   //     )
+    // CALL WEBRESOURCES
+    loadResourceString();
+    // form.setFieldsValue({xx});
+    // fetchRecordId()
+    //   .then((id) => {
+    //     setQuestionId(id?.data);
+    //     console.log("record id..", id);
+    //     const getGridData = fetchRequest(
+    //       GYDE_SURVEY_TEMPLATE,
+    //       id?.data,
+    //       "?$select=gyde_name,gyde_jsoncolumn,gyde_jsondata"
+    //     )
 
-  //   //       .then((records) => {
-  //   //         console.log("records ===>", records.data);
-  //   //         const jsonParse = JSON.parse(records.data.gyde_jsoncolumn);
-  //   //         const tableData = JSON.parse(records.data.gyde_jsondata);
-  //   //         console.log("jsonParse ===>", jsonParse);
-  //   //         console.log("jsonData ===>", tableData);
-  //   //         setDynamicColumns(jsonParse);
-  //   //         setDataSource(tableData);
-  //   //       })
-  //   //       .catch((err) => {
-  //   //         console.log("error when column fetching",err);
-  //   //         notification.error({
-  //   //           message: "Error",
-  //   //           description:"Something went wrong.. Please try again",
-  //   //         });
-  //   //       });
-  //   //     console.log("grid data....", getGridData);
-  //   //   })
-  //   //   .catch(() => {
-  //   //     notification.error({
-  //   //       message: "Error",
-  //   //       description: "Something went wrong.. Please try again",
-  //   //     });
-  //   //   });
-  // }, []);
+    //       .then((records) => {
+    //         console.log("records ===>", records.data);
+    //         const jsonParse = JSON.parse(records.data.gyde_jsoncolumn);
+    //         const tableData = JSON.parse(records.data.gyde_jsondata);
+    //         console.log("jsonParse ===>", jsonParse);
+    //         console.log("jsonData ===>", tableData);
+    //         setDynamicColumns(jsonParse);
+    //         setDataSource(tableData);
+    //       })
+    //       .catch((err) => {
+    //         console.log("error when column fetching",err);
+    //         notification.error({
+    //           message: "Error",
+    //           description:"Something went wrong.. Please try again",
+    //         });
+    //       });
+    //     console.log("grid data....", getGridData);
+    //   })
+    //   .catch(() => {
+    //     notification.error({
+    //       message: "Error",
+    //       description: "Something went wrong.. Please try again",
+    //     });
+    //   });
+  }, []);
 
   useEffect(() => {
     setColumnsData(dynamicColumns || [], dataSource || [], form);
   }, [inputValues]);
 
   useEffect(() => {
-    const lockData :any = isDisabled ;
     setColumnsData(dynamicColumns || [], dataSource || [], form, lockData);   
-  }, [isDisabled])
+  }, [lockData])
 
-  useEffect(() => {
-    setDynamicColumns(ColumnsDetails);
-    setDataSource(xx);
-    setInputValues(xx);
-    setColumnsData(ColumnsDetails, xx, form);
-  }, []);
+  // useEffect(() => {
+  //   setDynamicColumns(ColumnsDetails);
+  //   setDataSource(xx);
+  //   setInputValues(xx);
+  //   setColumnsData(ColumnsDetails, xx, form);
+  // }, []);
 
   const handleLockData = (columnName: string, value: boolean) => {
-    setIsDisabled(() => {
-      const newData = [...isDisabled];
-      const foundIndex = newData.findIndex((item) => item[columnName]);
+    setLockData(() => {
+      const newData = [...dynamicColumns];  
+      const foundIndex = newData.findIndex((item) =>item.id === columnName);
       if (foundIndex !== -1) {
-        if (value) {
           // Update existing item if value is checked
-          newData[foundIndex] = { ...newData[foundIndex], [columnName]: value };
-        } else {
-          // Remove existing item if value is unchecked
-          newData.splice(foundIndex, 1);
-        }
-      } else {
-        // Add new item if value is checked
-        newData.push({ [columnName]: value });
+          newData[foundIndex] = { ...newData[foundIndex], "iseditable": !value };
       }
       return newData;
     });
@@ -310,7 +295,7 @@ const CustomTable: React.FC = () => {
   const handleSave = (data: any) => {
     const convertedArray:any = Object.values(data);
     const records = JSON.stringify(convertedArray);
-
+    const columnData = JSON.stringify(lockData);
     for (let index = 0; index < convertedArray.length; index++) {
       const obj : any = convertedArray[index];
       for (let key in obj ) {
@@ -320,16 +305,21 @@ const CustomTable: React.FC = () => {
         }
       }     
     }
+    console.log("columnData,,,,,",columnData);
     saveRequest(GYDE_SURVEY_TEMPLATE, questionId, records)
       .then((res) => {
         if (!res?.error) {
-          let notificationType = "INFO";
+          saveColumnData(GYDE_SURVEY_TEMPLATE,questionId,columnData).then((res)=>{
+            if(!res?.error){
+              let notificationType = "INFO";
           // const msg = <span style={{color:SUCCESS_COLOUR_CODE}}>{saveDataNotify}</span>;
-          allDataFetch();
-          window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(saveDataNotify, notificationType);
-          setTimeout(function () {
-          window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
-          }, 10000);
+              allDataFetch();
+              window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(saveDataNotify, notificationType);
+              setTimeout(function () {
+              window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
+              }, 10000);
+            }
+          })     
         }
       })
       .catch((err) => {
@@ -390,16 +380,6 @@ const CustomTable: React.FC = () => {
           scroll={{ x: 1500, y: 400 }}
           sticky
           loading={loading}
-          onRow={(record) =>
-            isDisabled
-              ? {}
-              : {
-                  onClick: () => {
-                    // Handle row click event if table is not disabled
-                  },
-                }
-          }
-          style={isDisabled ? { opacity: 0.5 } : {}}
         />
         <div className="float-right mb-20">
           <Form.Item>

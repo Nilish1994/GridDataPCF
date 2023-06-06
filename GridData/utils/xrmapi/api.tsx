@@ -37,10 +37,25 @@ export const fetchRequest = async (
 export const saveRequest = async (
   entityLogicalName: any,
   id: string,
-  data:any
+  data:any,
 ): Promise<any> => {
   try {
     const result = await window.parent.Xrm.WebApi.updateRecord(entityLogicalName,id,{"gyde_jsondata":data});
+    return { error: false, data: result, loading: false };
+  } catch (error: any) {
+    // handle error conditions
+    return { error: true, data: [], loading: false };
+  }
+};
+
+export const saveColumnData = async (
+  entityLogicalName: any,
+  id: string,
+  columnData:any
+): Promise<any> => {
+  try {
+    console.log("column Data with is editable", columnData)
+    const result = await window.parent.Xrm.WebApi.updateRecord(entityLogicalName,id,{"gyde_jsoncolumn":columnData});
     return { error: false, data: result, loading: false };
   } catch (error: any) {
     // handle error conditions
