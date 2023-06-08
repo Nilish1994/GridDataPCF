@@ -360,7 +360,7 @@ const CustomTable: React.FC = () => {
             className="btn-blue mr-10"
             // disabled={isDisabled}
           >
-            Add a row
+            Add Row
           </Button>
           <Button
             onClick={() => handleDelete(selectedRowKeys)}
@@ -368,7 +368,7 @@ const CustomTable: React.FC = () => {
             className="btn-red-outline"
             // disabled={isDisabled}
           >
-            Delete
+            Delete Row
           </Button>
         </div>
 
