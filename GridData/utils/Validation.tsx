@@ -18,7 +18,7 @@ export const validationHandler = (_: any, value: any, validationData: any, isDat
   if (!(validationData.minLength == 0 && validationData.maxLength == 0)) {
     if (
       stringValue?.length < validationData?.minLength ||
-      stringValue?.length > validationData?.maxLength + 1
+      stringValue?.length > validationData?.maxLength
     ) {
       const msg = stringReplace(messages?.stringLengthValidation ,validationData?.minLength,validationData?.maxLength );
       return Promise.reject(msg);

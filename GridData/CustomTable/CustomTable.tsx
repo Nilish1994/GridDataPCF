@@ -27,26 +27,144 @@ const CustomTable: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<any>([]);
   const [dynamicColumns, setDynamicColumns] = useState<any>([]);
   const [columns, setColumns] = useState<any>([]);
+  const [oldColumns, setOldColumns] = useState<any>([]);
   const initialValues = {};
   const [inputValues, setInputValues] = useState<any>([]);
   const [lockData, setLockData] = useState<any>([]);
   const [loading, setLoading] = useState(false);
+  const [savedColumns, setSavedColumns] = useState<any>([]);
 
   const xx: any = [
-    {
-      Col1: "abcda",
-      Col2: "monday",
-      Tier: "N",
-      Col3: 2,
-      Col4: "2023-05-01T04:32:15.071Z",
+    [
+      {
+        "Col1": "asfasfa",
+        "Col2": "monday",
+        "Tier": "N",
+        "Col3": 2,
+        "Col4": "2023-05-01"
     },
     {
-      Col1: "abcda222",
-      Col2: "tuesday",
-      Tier: "Y",
-      Col3: 3,
-      Col4: "2023-05-01T04:32:15.071Z",
-    },
+        "Col1": "afasf",
+        "Col2": "tuesday",
+        "Tier": "Y",
+        "Col3": 3,
+        "Col4": "2023-05-14"
+    }
+  ],
+  [
+      {
+          "id": "Col1",
+          "order": "name",
+          "datatype": "String",
+          "guid": "acAqwy54352Abvd",
+          "validationData": {
+              "allowDuplicates": true,
+              "isMandatory": true,
+              "maxLength": 10,
+              "maxValue": 0,
+              "minLength": 4,
+              "minValue": 0,
+              "numberOfDecimalPlaces": 0
+          },
+          "width": 200,
+          "iseditable": true
+      },
+      {
+          "id": "Col2",
+          "order": "age",
+          "datatype": "List",
+          "guid": "acwewy54352Abvd",
+          "data": [
+              {
+                  "value": "monday",
+                  "label": "Monday"
+              },
+              {
+                  "value": "tuesday",
+                  "label": "Tuesday"
+              },
+              {
+                  "value": "wednesday",
+                  "label": "Wednesday"
+              },
+              {
+                  "value": "thursday",
+                  "label": "Thursday"
+              },
+              {
+                  "value": "friday",
+                  "label": "Friday"
+              }
+          ],
+          "validationData": {
+              "allowDuplicates": false,
+              "isMandatory": true,
+              "maxLength": 0,
+              "maxValue": 0,
+              "minLength": 0,
+              "minValue": 0,
+              "numberOfDecimalPlaces": 0
+          },
+          "width": 150
+      },
+      {
+          "id": "Tier",
+          "order": "address",
+          "datatype": "List",
+          "guid": "acyywy54352Abvd",
+          "data": [
+              {
+                  "value": "Y",
+                  "label": "Yes"
+              },
+              {
+                  "value": "N",
+                  "label": "No"
+              }
+          ],
+          "validationData": {
+              "allowDuplicates": true,
+              "isMandatory": true,
+              "maxLength": 0,
+              "maxValue": 0,
+              "minLength": 0,
+              "minValue": 0,
+              "numberOfDecimalPlaces": 0
+          },
+          "width": 150
+      },
+      {
+          "id": "Col3",
+          "order": "name2",
+          "datatype": "Numeric",
+          "guid": "acAqwy5435opbvd",
+          "validationData": {
+              "allowDuplicates": false,
+              "isMandatory": true,
+              "maxLength": 0,
+              "maxValue": 5,
+              "minLength": 0,
+              "minValue": 1,
+              "numberOfDecimalPlaces": 0
+          },
+          "width": 50
+      },
+      {
+          "id": "Col4",
+          "order": "name3",
+          "datatype": "Date",
+          "guid": "acAqwy543cxAbvd",
+          "validationData": {
+              "allowDuplicates": true,
+              "isMandatory": true,
+              "maxLength": 0,
+              "maxValue": 0,
+              "minLength": 0,
+              "minValue": 0,
+              "numberOfDecimalPlaces": 0
+          }
+      }
+  ]
   ];
 
   // SAMPLE FOR DYNAMIC MESSAGES USE
@@ -129,21 +247,23 @@ const CustomTable: React.FC = () => {
               tableData = [];
             }
 
-            console.log("jsonParse ===>", jsonParse);
-            console.log("jsonData ===>", tableData);
+            console.log("columnData ===>", jsonParse);
+            console.log("FilledjsonData ===>", tableData);
 
-            const newData = tableData?.map((item: any, num: number) => {
+            const newData = tableData?.[0]?.map((item: any, num: number) => {
               return {
                 ...item,
                 key: num,
               };
-            });
-            setLoading(false);
+            });  
+            setSavedColumns(tableData?.[1]);         
             setDynamicColumns(jsonParse || []);
+            setOldColumns(jsonParse || []);
             setDataSource(newData || []);
-            setInputValues(newData || []);
-            setColumnsData(jsonParse || [], newData || [], form, lockData);
+            setInputValues(newData || []);           
+            setColumnsData(jsonParse || [], newData || [], form, lockData, tableData?.[1]);
             setCount(count + 1);
+            setLoading(false);
           })
           .catch((err) => {
             console.log("error when column fetching", err);
@@ -168,47 +288,51 @@ const CustomTable: React.FC = () => {
       });
   };
 
-  useEffect(() => {
-    allDataFetch();
+  // useEffect(() => {
+  //   allDataFetch();
 
-    // CALL WEBRESOURCES
-    loadResourceString();
-    // form.setFieldsValue({xx});
-    // fetchRecordId()
-    //   .then((id) => {
-    //     setQuestionId(id?.data);
-    //     console.log("record id..", id);
-    //     const getGridData = fetchRequest(
-    //       GYDE_SURVEY_TEMPLATE,
-    //       id?.data,
-    //       "?$select=gyde_name,gyde_jsoncolumn,gyde_jsondata"
-    //     )
+  //   // CALL WEBRESOURCES
+  //   loadResourceString();
+  //   // form.setFieldsValue({xx});
+  //   // fetchRecordId()
+  //   //   .then((id) => {
+  //   //     setQuestionId(id?.data);
+  //   //     console.log("record id..", id);
+  //   //     const getGridData = fetchRequest(
+  //   //       GYDE_SURVEY_TEMPLATE,
+  //   //       id?.data,
+  //   //       "?$select=gyde_name,gyde_jsoncolumn,gyde_jsondata"
+  //   //     )
 
-    //       .then((records) => {
-    //         console.log("records ===>", records.data);
-    //         const jsonParse = JSON.parse(records.data.gyde_jsoncolumn);
-    //         const tableData = JSON.parse(records.data.gyde_jsondata);
-    //         console.log("jsonParse ===>", jsonParse);
-    //         console.log("jsonData ===>", tableData);
-    //         setDynamicColumns(jsonParse);
-    //         setDataSource(tableData);
-    //       })
-    //       .catch((err) => {
-    //         console.log("error when column fetching",err);
-    //         notification.error({
-    //           message: "Error",
-    //           description:"Something went wrong.. Please try again",
-    //         });
-    //       });
-    //     console.log("grid data....", getGridData);
-    //   })
-    //   .catch(() => {
-    //     notification.error({
-    //       message: "Error",
-    //       description: "Something went wrong.. Please try again",
-    //     });
-    //   });
-  }, []);
+  //   //       .then((records) => {
+  //   //         console.log("records ===>", records.data);
+  //   //         const jsonParse = JSON.parse(records.data.gyde_jsoncolumn);
+  //   //         const tableData = JSON.parse(records.data.gyde_jsondata);
+  //   //         console.log("jsonParse ===>", jsonParse);
+  //   //         console.log("jsonData ===>", tableData);
+  //   //         setDynamicColumns(jsonParse);
+  //   //         setDataSource(tableData);
+  //   //       })
+  //   //       .catch((err) => {
+  //   //         console.log("error when column fetching",err);
+  //   //         notification.error({
+  //   //           message: "Error",
+  //   //           description:"Something went wrong.. Please try again",
+  //   //         });
+  //   //       });
+  //   //     console.log("grid data....", getGridData);
+  //   //   })
+  //   //   .catch(() => {
+  //   //     notification.error({
+  //   //       message: "Error",
+  //   //       description: "Something went wrong.. Please try again",
+  //   //     });
+  //   //   });
+  // }, []);
+
+  // useEffect(() => {
+  //   setColumnsData(dynamicColumns || [], dataSource || [], form, lockData, savedColumns);   
+  // }, [savedColumns])
 
   useEffect(() => {
     setColumnsData(dynamicColumns || [], dataSource || [], form);
@@ -218,14 +342,16 @@ const CustomTable: React.FC = () => {
     setColumnsData(dynamicColumns || [], dataSource || [], form, lockData);   
   }, [lockData])
 
-  // useEffect(() => {
-  //   setDynamicColumns(ColumnsDetails);
-  //   setDataSource(xx);
-  //   setInputValues(xx);
-  //   setColumnsData(ColumnsDetails, xx, form);
-  // }, []);
+  useEffect(() => {
+    setDynamicColumns(ColumnsDetails);
+    setDataSource(xx[0]);
+    setInputValues(xx[0]);
+    setSavedColumns(xx[1]);
+    setColumnsData(ColumnsDetails, xx, form);
+  }, []);
 
   const handleLockData = (columnName: string, value: boolean) => {
+    console.log("field values??", form.getFieldsValue())
     setLockData(() => {
       const newData = [...dynamicColumns];  
       const foundIndex = newData.findIndex((item) =>item.id === columnName);
@@ -242,6 +368,7 @@ const CustomTable: React.FC = () => {
     dataSource: any,
     formData: any,
     disable?: boolean,
+    savedColumns?:any
   ) => {
     const columns = generateColumns(
       dynamicColumns,
@@ -251,7 +378,8 @@ const CustomTable: React.FC = () => {
       inputValues,
       {numberValueValidation,stringLengthValidation,requiredError,decimalValidation,duplicateError},
       disable,
-      handleLockData
+      handleLockData,
+      savedColumns
     );
     setColumns(columns || []);
   };
@@ -292,9 +420,28 @@ const CustomTable: React.FC = () => {
     setCount(count + 1);
   };
 
+  const compareColumnData = (oldData:any, newColumnData:any) => {
+    let isNotEqual = false;
+    console.log("new columns data..",newColumnData);
+    for (let index = 0; index < oldData.length; index++) {
+      const oldElement = oldData[index];
+      const newElement = newColumnData[index];
+      console.log("isNotEqual",oldElement, isNotEqual);
+      console.log("isNotEqual111",newElement, isNotEqual);
+      console.log("isNotEqual222", isNotEqual);
+      if(oldElement?.datatype === "String" && typeof newElement != "undefined"){
+        if((Number(oldElement?.iseditable) - Number(newElement?.iseditable)) !== 0 ){
+          isNotEqual = true; 
+        }
+      }
+    }
+    console.log("isNotEqual@@@", isNotEqual);
+    return isNotEqual ;
+  }
+
   const handleSave = (data: any) => {
     const convertedArray:any = Object.values(data);
-    const records = JSON.stringify(convertedArray);
+    // const records = JSON.stringify(convertedArray);
     const columnData = JSON.stringify(lockData);
     for (let index = 0; index < convertedArray.length; index++) {
       const obj : any = convertedArray[index];
@@ -305,11 +452,16 @@ const CustomTable: React.FC = () => {
         }
       }     
     }
-    console.log("columnData,,,,,",columnData);
+    const final = [convertedArray, lockData];
+    const records = JSON.stringify(final);
+    console.log("dynamicColumns,,,,,",dynamicColumns);
+    console.log("lockData,,,,,", lockData);
+    console.log("final....",final,);
     saveRequest(GYDE_SURVEY_TEMPLATE, questionId, records)
       .then((res) => {
         if (!res?.error) {
-          saveColumnData(GYDE_SURVEY_TEMPLATE,questionId,columnData).then((res)=>{
+          if(compareColumnData(oldColumns, lockData)){
+              saveColumnData(GYDE_SURVEY_TEMPLATE,questionId,columnData).then((res)=>{
             if(!res?.error){
               let notificationType = "INFO";
           // const msg = <span style={{color:SUCCESS_COLOUR_CODE}}>{saveDataNotify}</span>;
@@ -319,7 +471,16 @@ const CustomTable: React.FC = () => {
               window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
               }, 10000);
             }
-          })     
+          })
+          }else{
+            let notificationType = "INFO";
+            // const msg = <span style={{color:SUCCESS_COLOUR_CODE}}>{saveDataNotify}</span>;
+                allDataFetch();
+                window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(saveDataNotify, notificationType);
+                setTimeout(function () {
+                window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
+                }, 10000);
+          }         
         }
       })
       .catch((err) => {
@@ -354,21 +515,23 @@ const CustomTable: React.FC = () => {
         onValuesChange={handleValueChange}
       >
         <div className="float-right mb-20">
+          
           <Button
-            onClick={handleAdd}
+            onClick={() => handleDelete(selectedRowKeys)}
             type="primary"
             className="btn-blue mr-10"
             // disabled={isDisabled}
           >
-            Add Row
+            Delete Row
           </Button>
+
           <Button
-            onClick={() => handleDelete(selectedRowKeys)}
+            onClick={handleAdd}
             type="primary"
-            className="btn-red-outline"
+            className="btn-red-outline"           
             // disabled={isDisabled}
           >
-            Delete Row
+            Add Row
           </Button>
         </div>
 
@@ -384,21 +547,20 @@ const CustomTable: React.FC = () => {
         <div className="float-right mb-20">
           <Form.Item>
             <Button
+              onClick={() => cancel()}
               type="primary"
-              htmlType="submit"
               className="btn-blue mr-10"
               // disabled={isDisabled}
             >
-              Save
+              Cancel
             </Button>
-
             <Button
-              onClick={() => cancel()}
               type="primary"
+              htmlType="submit"
               className="btn-red-outline"
               // disabled={isDisabled}
             >
-              Cancel
+              Save
             </Button>
           </Form.Item>
         </div>

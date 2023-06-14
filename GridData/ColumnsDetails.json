@@ -3,6 +3,7 @@
     "id": "Col1",
     "order": "name",
     "datatype": "String",
+    "guid":"acAqwy54352Abvd",
     "validationData": {
       "allowDuplicates": true,
       "isMandatory": true,
@@ -19,6 +20,7 @@
     "id": "Col2",
     "order": "age",
     "datatype": "List",
+    "guid":"acwewy54352Abvd",
     "data": [
       {
         "value": "monday",
@@ -56,6 +58,7 @@
     "id": "Tier",
     "order": "address",
     "datatype": "List",
+    "guid":"acyywy54352Abvd",
     "data": [
       {
         "value": "Y",
@@ -81,6 +84,7 @@
     "id": "Col3",
     "order": "name2",
     "datatype": "Numeric",
+    "guid":"acAqwy5435opbvd",
     "validationData": {
       "allowDuplicates": false,
       "isMandatory": true,
@@ -96,6 +100,7 @@
     "id": "Col4",
     "order": "name3",
     "datatype": "Date",
+    "guid":"acAqwy543cxAbvd",
     "validationData": {
       "allowDuplicates": true,
       "isMandatory": true,
