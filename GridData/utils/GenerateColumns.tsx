@@ -40,15 +40,19 @@ export const generateColumns = (
   validationInputs?: any,
   messages?:any,
   isDisabled?: any,
-  setIsDisabled?:any
+  setIsDisabled?:any,
+  savedColumns?:any
 ) => {
   const dynamicColumns: ColumnsType<any> = columnConfig.map(
     (column: any, num: any) => {
-      const { id, order, datatype, data, validationData, width } = column;
-
+      const { id, order,guid ,datatype, data, validationData, width } = column;
+      const col = savedColumns?.find((item:any)=>item?.guid==guid);
       let colWidth = 0;
       let columnRender;
       let title :any = '';
+      console.log("savedColumns",savedColumns);
+      console.log("col",col);
+      console.log("response",response);
       if (datatype === String.name) {
         title = (
           <span key={order} className="flex-wrap"> {id}   
@@ -65,7 +69,7 @@ export const generateColumns = (
             <Form.Item
               key={index} // Add a unique key to force a re-render
               name={[index, `${id}`]}
-              initialValue={response[index]?.[id]}
+              initialValue={response[index]?.[col?.id]}
               rules={[
                 {
                   validator: (_: any, value: any) => {
@@ -81,14 +85,10 @@ export const generateColumns = (
                 },
               ]}
             >
-              {/* <Tooltip
-                title={form.getFieldError([index, `${id}`])?.join(" ")}
-              ></Tooltip> */}
               <Input
                 placeholder={"Please insert string"}
                 // defaultValue={response[index]?.[id]}
                 value={item || response[index]?.[id]}
-                // disabled={isDisabled?.some((item:any) => item[id])}
               />
             </Form.Item>
           );
@@ -102,11 +102,12 @@ export const generateColumns = (
             validationInputs,
             validationData
           );
+          const showOptions = options?.some((item:any)=>item?.value == response[index]?.[col?.id])
           return (
             <Form.Item
               key={index} // Add a unique key to force a re-render
               name={[index, `${id}`]}
-              initialValue={response[index]?.[id]}
+              initialValue={showOptions ? response[index]?.[col?.id] : null}
               rules={[
                 { required: validationData?.isMandatory, message: messages?.requiredError },
               ]}
@@ -115,7 +116,6 @@ export const generateColumns = (
                 placeholder={"Select a option"}
                 options={options}
                 value={item || response[index]?.[id]} // new add
-                // disabled={isDisabled}
               />
             </Form.Item>
           );
@@ -127,7 +127,7 @@ export const generateColumns = (
             <Form.Item
               key={index} // Add a unique key to force a re-render
               name={[index, `${id}`]}
-              initialValue={response[index]?.[id]}
+              initialValue={response[index]?.[col?.id]}
               // validateTrigger={["onChange", "onBlur"]} // Add validateTrigger to trigger validation on input change and blur
               rules={[
                 {
@@ -146,9 +146,8 @@ export const generateColumns = (
             >
               <InputNumber
                 placeholder={"Insert a number"}
-                defaultValue={response[index]?.[id]}
+                // defaultValue={response[index]?.[id]}
                 value={item || response[index]?.[id]}
-                // disabled={isDisabled}
               />
             </Form.Item>
           );
@@ -157,8 +156,8 @@ export const generateColumns = (
         colWidth = width   ? width : 40;
         columnRender = (item: any, record: any, index: number) => {
           // Parse the default date string into a moment object
-          const date: any = moment();
-          const defaultDate: string = response[index]?.[id] || date;
+          const date: any = '';
+          const defaultDate: string = response ? response[index]?.[col?.id] : date;
           // Parse the default date string into a Dayjs object
           const defaultDayjs: Dayjs = dayjs(defaultDate);
           return (
@@ -179,12 +178,12 @@ export const generateColumns = (
                   },
                 },
               ]}
-              initialValue={defaultDayjs}
+              initialValue={defaultDayjs.isValid() ? defaultDayjs : null}
             >
               <DatePicker
                 placeholder={`Select a date`}
                 format={"DD MMM, YYYY"}
-                value={item || defaultDayjs}
+                value={defaultDayjs}
                 // disabled={isDisabled}
               />
             </Form.Item>

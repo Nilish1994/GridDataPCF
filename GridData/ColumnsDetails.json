@@ -1,8 +1,9 @@
 [
   {
-    "id": "Col1",
+    "id": "Col!1",
     "order": "name",
     "datatype": "String",
+    "guid": "acAqwy54352Abvd",
     "validationData": {
       "allowDuplicates": true,
       "isMandatory": true,
@@ -18,6 +19,7 @@
   {
     "id": "Col2",
     "order": "age",
+    "guid": "acwewy54352Abvd",
     "datatype": "List",
     "data": [
       {
@@ -55,6 +57,7 @@
   {
     "id": "Tier",
     "order": "address",
+    "guid": "acyywy54352Abvd",
     "datatype": "List",
     "data": [
       {
@@ -80,6 +83,7 @@
   {
     "id": "Col3",
     "order": "name2",
+    "guid": "acAqwy5435opbvd",
     "datatype": "Numeric",
     "validationData": {
       "allowDuplicates": false,
@@ -95,6 +99,7 @@
   {
     "id": "Col4",
     "order": "name3",
+    "guid": "acAqwy543cxAbvd",
     "datatype": "Date",
     "validationData": {
       "allowDuplicates": true,
