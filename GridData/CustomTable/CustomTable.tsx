@@ -258,6 +258,7 @@ const CustomTable: React.FC = () => {
             
             setSavedColumns( tableData?.[1])
             setDynamicColumns(jsonParse || []);
+            setLockData(jsonParse);
             setDataSource(newData || []);
             setInputValues(newData || []);
             setColumnsData(jsonParse || [], newData || [], form, lockData,tableData?.[1]);
@@ -287,62 +288,34 @@ const CustomTable: React.FC = () => {
       });
   };
 
-  // useEffect(() => {
-  //   allDataFetch();
+  useEffect(() => {
+    allDataFetch();
 
-  //   // CALL WEBRESOURCES
-  //   loadResourceString();
-  //   // form.setFieldsValue({xx});
-  //   // fetchRecordId()
-  //   //   .then((id) => {
-  //   //     setQuestionId(id?.data);
-  //   //     console.log("record id..", id);
-  //   //     const getGridData = fetchRequest(
-  //   //       GYDE_SURVEY_TEMPLATE,
-  //   //       id?.data,
-  //   //       "?$select=gyde_name,gyde_jsoncolumn,gyde_jsondata"
-  //   //     )
+    // CALL WEBRESOURCES
+    loadResourceString();
 
-  //   //       .then((records) => {
-  //   //         console.log("records ===>", records.data);
-  //   //         const jsonParse = JSON.parse(records.data.gyde_jsoncolumn);
-  //   //         const tableData = JSON.parse(records.data.gyde_jsondata);
-  //   //         console.log("jsonParse ===>", jsonParse);
-  //   //         console.log("jsonData ===>", tableData);
-  //   //         setDynamicColumns(jsonParse);
-  //   //         setDataSource(tableData);
-  //   //       })
-  //   //       .catch((err) => {
-  //   //         console.log("error when column fetching",err);
-  //   //         notification.error({
-  //   //           message: "Error",
-  //   //           description:"Something went wrong.. Please try again",
-  //   //         });
-  //   //       });
-  //   //     console.log("grid data....", getGridData);
-  //   //   })
-  //   //   .catch(() => {
-  //   //     notification.error({
-  //   //       message: "Error",
-  //   //       description: "Something went wrong.. Please try again",
-  //   //     });
-  //   //   });
-  // }, []);
+  }, []);
+
+  useEffect(()=>{
+    setTimeout(()=>{
+      form.resetFields();
+    },2200)
+  },[])
 
   useEffect(() => {
-    setColumnsData(dynamicColumns || [], dataSource || [], form);
+    setColumnsData(dynamicColumns || [], dataSource || [], form,lockData,savedColumns);
   }, [inputValues]);
 
   useEffect(() => {
-    setColumnsData(dynamicColumns || [], dataSource || [], form, lockData);   
+    setColumnsData(dynamicColumns || [], dataSource || [], form, lockData,savedColumns);   
   }, [lockData])
 
-  useEffect(() => {
-    setDynamicColumns(ColumnsDetails);
-    setDataSource(xx[0]);
-    setInputValues(xx[0]);
-    setColumnsData(ColumnsDetails, xx[0], form, savedColumns,xx[1]);
-  }, []);
+  // useEffect(() => {
+  //   setDynamicColumns(ColumnsDetails);
+  //   setDataSource(xx[0]);
+  //   setInputValues(xx[0]);
+  //   setColumnsData(ColumnsDetails, xx[0], form, savedColumns,xx[1]);
+  // }, []);
 
   const handleLockData = (columnName: string, value: boolean) => {
     setLockData(() => {
@@ -426,7 +399,8 @@ const CustomTable: React.FC = () => {
         }
       }     
     }
-    console.log("columnData,,,,,",columnData);
+    // console.log("columnData,,,,,",columnData);
+    // console.log("lockData ||| ",lockData);
     const final = [convertedArray, lockData];
     const records = JSON.stringify(final);
     saveRequest(GYDE_SURVEY_TEMPLATE, questionId, records)
@@ -480,7 +454,7 @@ const CustomTable: React.FC = () => {
         <Button
             onClick={() => handleDelete(selectedRowKeys)}
             type="primary"
-            className="btn-blue mr-10"
+            className="btn-red-outline mr-10"
           >
             Delete Row
           </Button>
@@ -488,7 +462,7 @@ const CustomTable: React.FC = () => {
           <Button
             onClick={handleAdd}
             type="primary"            
-            className="btn-red-outline"
+            className="btn-blue"
           >
             Add Row
           </Button>
@@ -509,7 +483,7 @@ const CustomTable: React.FC = () => {
           <Button
               onClick={() => cancel()}
               type="primary"
-              className="btn-blue mr-10"
+              className="btn-red-outline mr-10"
             >
               Cancel
             </Button>
@@ -517,7 +491,7 @@ const CustomTable: React.FC = () => {
             <Button
               type="primary"
               htmlType="submit"
-              className="btn-red-outline"
+              className="btn-blue"
             >
               Save
             </Button>
