@@ -32,7 +32,7 @@ const CustomTable: React.FC = () => {
   const [lockData, setLockData] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const [savedColumns, setSavedColumns] = useState<any>([]);
-  const [isDisable, setIsDisable] = useState(true);
+  const [isDisable, setIsDisable] = useState(false);
   const xx: any = [
     [
       {
@@ -293,19 +293,19 @@ const CustomTable: React.FC = () => {
       });
   };
 
-  // useEffect(() => {
-  //   allDataFetch();
+  useEffect(() => {
+    allDataFetch();
 
-  //   // CALL WEBRESOURCES
-  //   loadResourceString();
+    // CALL WEBRESOURCES
+    loadResourceString();
 
-  // }, []);
+  }, []);
 
-  // useEffect(()=>{
-  //   setTimeout(()=>{
-  //     form.resetFields();
-  //   },2200)
-  // },[])
+  useEffect(()=>{
+    setTimeout(()=>{
+      form.resetFields();
+    },2200)
+  },[])
 
   useEffect(() => {
     setColumnsData(dynamicColumns || [], dataSource || [], form,isDisable,savedColumns);
@@ -315,12 +315,12 @@ const CustomTable: React.FC = () => {
     setColumnsData(dynamicColumns || [], dataSource || [], form, isDisable,savedColumns);   
   }, [lockData])
 
-  useEffect(() => {
-    setDynamicColumns(ColumnsDetails);
-    setDataSource(xx[0]);
-    setInputValues(xx[0]);
-    setColumnsData(ColumnsDetails, xx[0], form, savedColumns,xx[1]);
-  }, []);
+  // useEffect(() => {
+  //   setDynamicColumns(ColumnsDetails);
+  //   setDataSource(xx[0]);
+  //   setInputValues(xx[0]);
+  //   setColumnsData(ColumnsDetails, xx[0], form, savedColumns,xx[1]);
+  // }, []);
 
   const handleLockData = (columnName: string, value: boolean) => {
     setLockData(() => {
