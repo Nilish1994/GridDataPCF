@@ -32,7 +32,7 @@ const CustomTable: React.FC = () => {
   const [lockData, setLockData] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const [savedColumns, setSavedColumns] = useState<any>([]);
-
+  const [isDisable, setIsDisable] = useState(true);
   const xx: any = [
     [
       {
@@ -237,7 +237,7 @@ const CustomTable: React.FC = () => {
         const getGridData = await fetchRequest(
           GYDE_SURVEY_TEMPLATE,
           id?.data,
-          "?$select=gyde_name,gyde_jsoncolumn,gyde_jsondata"
+          "?$select=gyde_name,gyde_jsoncolumn,gyde_jsondata,statuscode"
         )
           .then(async (records) => {
             const jsonParse = await JSON.parse(records.data.gyde_jsoncolumn);
@@ -249,6 +249,11 @@ const CustomTable: React.FC = () => {
             console.log("jsonParse ===>", jsonParse);
             console.log("jsonData ===>", tableData);
 
+            if (records.data.statuscode == 528670003 || records.data.statuscode == 528670005) {
+              setIsDisable(true)
+            } else {
+              setIsDisable(false);
+            }
             const newData = tableData?.[0]?.map((item: any, num: number) => {
               return {
                 ...item,
@@ -261,7 +266,7 @@ const CustomTable: React.FC = () => {
             setLockData(jsonParse);
             setDataSource(newData || []);
             setInputValues(newData || []);
-            setColumnsData(jsonParse || [], newData || [], form, lockData,tableData?.[1]);
+            setColumnsData(jsonParse || [], newData || [], form, isDisable,tableData?.[1]);
             setCount(count + 1);
             setLoading(false);
           })
@@ -288,34 +293,34 @@ const CustomTable: React.FC = () => {
       });
   };
 
+  // useEffect(() => {
+  //   allDataFetch();
+
+  //   // CALL WEBRESOURCES
+  //   loadResourceString();
+
+  // }, []);
+
+  // useEffect(()=>{
+  //   setTimeout(()=>{
+  //     form.resetFields();
+  //   },2200)
+  // },[])
+
   useEffect(() => {
-    allDataFetch();
-
-    // CALL WEBRESOURCES
-    loadResourceString();
-
-  }, []);
-
-  useEffect(()=>{
-    setTimeout(()=>{
-      form.resetFields();
-    },2200)
-  },[])
-
-  useEffect(() => {
-    setColumnsData(dynamicColumns || [], dataSource || [], form,lockData,savedColumns);
+    setColumnsData(dynamicColumns || [], dataSource || [], form,isDisable,savedColumns);
   }, [inputValues]);
 
   useEffect(() => {
-    setColumnsData(dynamicColumns || [], dataSource || [], form, lockData,savedColumns);   
+    setColumnsData(dynamicColumns || [], dataSource || [], form, isDisable,savedColumns);   
   }, [lockData])
 
-  // useEffect(() => {
-  //   setDynamicColumns(ColumnsDetails);
-  //   setDataSource(xx[0]);
-  //   setInputValues(xx[0]);
-  //   setColumnsData(ColumnsDetails, xx[0], form, savedColumns,xx[1]);
-  // }, []);
+  useEffect(() => {
+    setDynamicColumns(ColumnsDetails);
+    setDataSource(xx[0]);
+    setInputValues(xx[0]);
+    setColumnsData(ColumnsDetails, xx[0], form, savedColumns,xx[1]);
+  }, []);
 
   const handleLockData = (columnName: string, value: boolean) => {
     setLockData(() => {
@@ -369,6 +374,9 @@ const CustomTable: React.FC = () => {
     onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
       setSelectedRowKeys(selectedRowKeys);
     },
+    getCheckboxProps: (record:any) => ({
+      disabled:isDisable
+    }),
     columnWidth:15
   };
 
@@ -455,6 +463,7 @@ const CustomTable: React.FC = () => {
             onClick={() => handleDelete(selectedRowKeys)}
             type="primary"
             className="btn-red-outline mr-10"
+            disabled={isDisable}
           >
             Delete Row
           </Button>
@@ -463,6 +472,7 @@ const CustomTable: React.FC = () => {
             onClick={handleAdd}
             type="primary"            
             className="btn-blue"
+            disabled={isDisable}
           >
             Add Row
           </Button>
@@ -484,14 +494,16 @@ const CustomTable: React.FC = () => {
               onClick={() => cancel()}
               type="primary"
               className="btn-red-outline mr-10"
+              disabled={isDisable}
             >
-              Cancel
+              Reset
             </Button>
 
             <Button
               type="primary"
               htmlType="submit"
               className="btn-blue"
+              disabled={isDisable}
             >
               Save
             </Button>

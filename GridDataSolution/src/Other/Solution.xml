@@ -8,8 +8,8 @@
       <LocalizedName description="GridDataSolution" languagecode="1033" />
     </LocalizedNames>
     <Descriptions />
-     <Version>1.0.0.69</Version>
-    <!-- <Version>1.23.165.5063</Version> -->
+     <Version>1.0.0.71</Version>
+    <!-- <Version>1.23.165.5064</Version> -->
     <!-- Solution Package Type: Unmanaged(0)/Managed(1)/Both(2)-->
     <Managed>0</Managed>
     <Publisher>

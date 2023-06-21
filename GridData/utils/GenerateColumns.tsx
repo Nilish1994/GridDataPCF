@@ -56,6 +56,7 @@ export const generateColumns = (
           <span key={order} className="flex-wrap"> {id}   
             <Checkbox  
               key={id +`${col}`}
+              disabled={isDisabled}
               defaultChecked={col ? !col?.iseditable : !column?.iseditable}
               onChange={(e) => setIsDisabled( id, e.target.checked)}>
                 Lock Data
@@ -87,6 +88,7 @@ export const generateColumns = (
                 placeholder={"Please insert string"}
                 // defaultValue={response[index]?.[id]}
                 value={item || response[index]?.[id]}
+                disabled={isDisabled}
               />
             </Form.Item>
           );
@@ -115,6 +117,7 @@ export const generateColumns = (
                 placeholder={"Select a option"}
                 options={options}
                 value={item || response[index]?.[col?.id]} // new add
+                disabled={isDisabled}
               />
             </Form.Item>
           );
@@ -147,6 +150,7 @@ export const generateColumns = (
                 placeholder={"Insert a number"}
                 // defaultValue={response[index]?.[id]}
                 value={item || response[index]?.[id]}
+                disabled={isDisabled}
               />
             </Form.Item>
           );
@@ -183,7 +187,7 @@ export const generateColumns = (
                 placeholder={`Select a date`}
                 format={"DD MMM, YYYY"}
                 value={defaultDayjs}
-                // disabled={isDisabled}
+                disabled={isDisabled}
                 
               />
             </Form.Item>

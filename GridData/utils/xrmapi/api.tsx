@@ -27,6 +27,7 @@ export const fetchRequest = async (
 ): Promise<any> => {
   try {
     const result = await window.parent.Xrm.WebApi.retrieveRecord(entityLogicalName,id,columnsNames);
+    console.log("api result : ", result);
     return { error: false, data: result, loading: false };
   } catch (error: any) {
     // handle error conditions
