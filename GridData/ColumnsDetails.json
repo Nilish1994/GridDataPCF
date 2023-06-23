@@ -94,8 +94,8 @@
       "minValue": 1,
       "numberOfDecimalPlaces": 0
     },
-    "width":50
-  },
+    "width":150
+  } ,
   {
     "id": "Col4",
     "order": "name3",

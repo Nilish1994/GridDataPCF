@@ -249,7 +249,7 @@ const CustomTable: React.FC = () => {
             console.log("jsonParse ===>", jsonParse);
             console.log("jsonData ===>", tableData);
 
-            if (records.data.statuscode == 528670003 || records.data.statuscode == 528670005) {
+            if (records.data.statuscode == 2 || records.data.statuscode == 528670001) {
               setIsDisable(true)
             } else {
               setIsDisable(false);
@@ -478,16 +478,17 @@ const CustomTable: React.FC = () => {
           </Button>
           
         </div>
-
-        <Table
-          columns={columns}
-          dataSource={dataSource}
-          rowSelection={{ ...rowSelection }}
-          pagination={false}
-          scroll={{ x: 1500, y: 400 }}
-          sticky
-          loading={loading}
-        />
+        <div style={{ width: "1000px", height: "400px", overflow: "auto" }}>
+          <Table
+            columns={columns}
+            dataSource={dataSource}
+            rowSelection={{ ...rowSelection }}
+            pagination={false}
+            scroll={{ x: 'max-content', y: 'max-content' }}
+            sticky
+            loading={loading}
+          />
+        </div>
         <div className="float-right mb-20">
           <Form.Item>
           <Button

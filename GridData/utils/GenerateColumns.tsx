@@ -43,14 +43,20 @@ export const generateColumns = (
   setIsDisabled?:any,
   savedColumns?:any,
 ) => {
-  const dynamicColumns: ColumnsType<any> = columnConfig.map(
+  const obj = {
+
+    dataIndex: 'hidden',
+    width: 'auto',
+    render: () => null,
+  };
+  const updatedColumns = [...columnConfig, obj];
+  const dynamicColumns: ColumnsType<any> = updatedColumns?.map(
     (column: any, num: any) => {
       const { id, order,guid ,datatype, data, validationData, width } = column;
       const col = savedColumns?.find((item:any)=>item?.guid==guid);    
       let colWidth = 0;
       let columnRender;
       let title :any = '';
-
       if (datatype === String.name) {
         title = (
           <span key={order} className="flex-wrap"> {id}   
@@ -194,10 +200,10 @@ export const generateColumns = (
           );
         };
       }
-
+// columnConfig?.length < 4 && columnConfig?.length -1 == num ? "auto" : colWidth
       return {
         title: datatype === String.name ? title : id,    
-        width:colWidth,
+        width: colWidth,
         dataIndex: order,
         render: columnRender,
       };
