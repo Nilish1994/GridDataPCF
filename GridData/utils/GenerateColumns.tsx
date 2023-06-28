@@ -42,6 +42,7 @@ export const generateColumns = (
   isDisabled?: any,
   setIsDisabled?:any,
   savedColumns?:any,
+  isColumnFetched?:any,
 ) => {
   const obj = {
 
@@ -49,11 +50,12 @@ export const generateColumns = (
     width: 'auto',
     render: () => null,
   };
-  const updatedColumns = [...columnConfig, obj];
+  const updatedColumns =  [...columnConfig, obj];
   const dynamicColumns: ColumnsType<any> = updatedColumns?.map(
     (column: any, num: any) => {
       const { id, order,guid ,datatype, data, validationData, width } = column;
-      const col = savedColumns?.find((item:any)=>item?.guid==guid);    
+      const col = savedColumns?.find((item:any)=>item?.guid==guid);
+      isColumnFetched(col);    
       let colWidth = 0;
       let columnRender;
       let title :any = '';
@@ -68,7 +70,7 @@ export const generateColumns = (
                 Lock Data
             </Checkbox>
           </span>);
-        colWidth = width  ? width : 70;
+        colWidth = width  ? width : 160;
         columnRender = (item: any, record: any, index: number) => {
           return (
             <Form.Item
@@ -100,7 +102,7 @@ export const generateColumns = (
           );
         };
       } else if (datatype === List.name) {
-        colWidth = width   ? width : 70;
+        colWidth = width   ? width : 160;
         columnRender = (item: any, record: any, index: number) => {
           const showOptions = data?.some((item:any)=>item?.value == response[index]?.[col?.id]); 
           const options: any = filteredOptions(
@@ -129,7 +131,7 @@ export const generateColumns = (
           );
         };
       } else if (datatype === Numeric.name) {
-        colWidth = width   ? width : 40;
+        colWidth = width   ? width : 160;
         columnRender = (item: any, record: any, index: number) => {
           return (
             <Form.Item
@@ -162,7 +164,7 @@ export const generateColumns = (
           );
         };
       } else if (datatype === Date.name) {
-        colWidth = width   ? width : 40;
+        colWidth = width   ? width : 160;
         columnRender = (item: any, record: any, index: number) => {
           // Parse the default date string into a moment object
           const date: any = moment();
@@ -200,7 +202,6 @@ export const generateColumns = (
           );
         };
       }
-// columnConfig?.length < 4 && columnConfig?.length -1 == num ? "auto" : colWidth
       return {
         title: datatype === String.name ? title : id,    
         width: colWidth,

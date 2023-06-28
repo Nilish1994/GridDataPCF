@@ -12,7 +12,7 @@
     "refreshTypes": "pcf-scripts refreshTypes"
   },
   "dependencies": {
-    "antd": "^5.4.7",
+    "antd": "^5.6.2",
     "dayjs": "^1.11.7",
     "moment": "^2.29.4",
     "react-dom": "^17.0.2"

@@ -33,6 +33,7 @@ const CustomTable: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [savedColumns, setSavedColumns] = useState<any>([]);
   const [isDisable, setIsDisable] = useState(false);
+  const [filteredCol, setFilteredCol] = useState();
   const xx: any = [
     [
       {
@@ -302,10 +303,8 @@ const CustomTable: React.FC = () => {
   }, []);
 
   useEffect(()=>{
-    setTimeout(()=>{
-      form.resetFields();
-    },2200)
-  },[])
+    form.resetFields(); 
+  },[filteredCol])
 
   useEffect(() => {
     setColumnsData(dynamicColumns || [], dataSource || [], form,isDisable,savedColumns);
@@ -350,10 +349,15 @@ const CustomTable: React.FC = () => {
       {numberValueValidation,stringLengthValidation,requiredError,decimalValidation,duplicateError},
       disable,
       handleLockData,
-      savedColumns
+      savedColumns,
+      filteredColumn,
     );
     setColumns(columns || []);
   };
+
+  const filteredColumn = (val:any) => {
+    setFilteredCol(val);
+  }
 
   const arrayToObj = (arr: string[]) => {
     const obj: { [key: string]: any } = {};
@@ -407,17 +411,17 @@ const CustomTable: React.FC = () => {
         }
       }     
     }
-    // console.log("columnData,,,,,",columnData);
-    // console.log("lockData ||| ",lockData);
+    console.log("columnData,,,,,",columnData);
+    console.log("lockData ||| ",lockData);
     const final = [convertedArray, lockData];
     const records = JSON.stringify(final);
+    console.log("final save data array: ",final);
     saveRequest(GYDE_SURVEY_TEMPLATE, questionId, records)
       .then((res) => {
         if (!res?.error) {
           saveColumnData(GYDE_SURVEY_TEMPLATE,questionId,columnData).then((res)=>{
             if(!res?.error){
               let notificationType = "INFO";
-          // const msg = <span style={{color:SUCCESS_COLOUR_CODE}}>{saveDataNotify}</span>;
               allDataFetch();
               window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(saveDataNotify, notificationType);
               setTimeout(function () {
@@ -429,7 +433,6 @@ const CustomTable: React.FC = () => {
       })
       .catch((err) => {
         let notificationType = "ERROR";
-        // const msg = <span style={{color:ERROR_COLOUR_CODE}}>{saveDataError}</span>;
         window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(saveDataError, notificationType);
         setTimeout(function () {
           window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
@@ -478,17 +481,16 @@ const CustomTable: React.FC = () => {
           </Button>
           
         </div>
-        <div style={{ width: "1000px", height: "400px", overflow: "auto" }}>
           <Table
+            className={dataSource?.length < 1 ? "overflow-wrapper" : ""}
             columns={columns}
             dataSource={dataSource}
             rowSelection={{ ...rowSelection }}
             pagination={false}
-            scroll={{ x: 'max-content', y: 'max-content' }}
+            scroll={{ x: 'max-content', y: 'calc(100vh - 450px)' }}
             sticky
             loading={loading}
           />
-        </div>
         <div className="float-right mb-20">
           <Form.Item>
           <Button
