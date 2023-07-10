@@ -7,7 +7,8 @@
 }
 
 .overflow-wrapper .ant-table-body { 
-  overflow: hidden !important; 
+  overflow-y: hidden !important; 
+  overflow-x: auto;
 }
 
 .pcf-wrapper .ant-table-cell .ant-form-item {

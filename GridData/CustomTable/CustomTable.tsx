@@ -3,7 +3,7 @@ import { Button, Form, Table, } from "antd";
 import { generateColumns } from "../utils/GenerateColumns";
 import ColumnsDetails from "../ColumnsDetails.json";
 import { fetchRecordId, fetchRequest, saveColumnData, saveRequest } from "../utils/xrmapi/api";
-import { ERROR_COLOUR_CODE, GYDE_SURVEY_TEMPLATE, SUCCESS_COLOUR_CODE } from "../constants/Constants";
+import { GYDE_SURVEY_TEMPLATE, SUCCESS_COLOUR_CODE } from "../constants/Constants";
 import moment from "moment";
 
 interface Item {
@@ -296,7 +296,6 @@ const CustomTable: React.FC = () => {
 
   useEffect(() => {
     allDataFetch();
-
     // CALL WEBRESOURCES
     loadResourceString();
 
@@ -312,7 +311,7 @@ const CustomTable: React.FC = () => {
 
   useEffect(() => {
     setColumnsData(dynamicColumns || [], dataSource || [], form, isDisable,savedColumns);   
-  }, [lockData])
+  }, [lockData, dataSource])
 
   // useEffect(() => {
   //   setDynamicColumns(ColumnsDetails);
@@ -371,7 +370,12 @@ const CustomTable: React.FC = () => {
     const newData = dataSource.filter(
       (item: any) => !key.some((rowKey) => rowKey === item.key)
     );
-    setDataSource(newData || []);
+    setDataSource(newData);
+    setSelectedRowKeys([]);
+
+    setTimeout(()=>{
+      form.resetFields();
+    },1000)
   };
 
   const rowSelection = {
@@ -390,15 +394,14 @@ const CustomTable: React.FC = () => {
   };
 
   const handleAdd = () => {
-    const column = columns?.map((item: any) => item?.title);
+    const column = columns?.map((item: any) => item?.columnTitle);
     let modifiedObj = arrayToObj(column);
     modifiedObj.key = dataSource?.length + 1;
-
     setDataSource([...dataSource, modifiedObj]);
     setCount(count + 1);
   };
 
-  const handleSave = (data: any) => {
+  const handleSave = async (data: any) => {
     const convertedArray:any = Object.values(data);
     // const records = JSON.stringify(convertedArray);
     const columnData = JSON.stringify(lockData);
@@ -411,33 +414,36 @@ const CustomTable: React.FC = () => {
         }
       }     
     }
-    console.log("columnData,,,,,",columnData);
-    console.log("lockData ||| ",lockData);
     const final = [convertedArray, lockData];
     const records = JSON.stringify(final);
-    console.log("final save data array: ",final);
-    saveRequest(GYDE_SURVEY_TEMPLATE, questionId, records)
-      .then((res) => {
-        if (!res?.error) {
-          saveColumnData(GYDE_SURVEY_TEMPLATE,questionId,columnData).then((res)=>{
-            if(!res?.error){
-              let notificationType = "INFO";
-              allDataFetch();
-              window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(saveDataNotify, notificationType);
-              setTimeout(function () {
-              window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
-              }, 10000);
-            }
-          })     
-        }
-      })
-      .catch((err) => {
-        let notificationType = "ERROR";
-        window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(saveDataError, notificationType);
-        setTimeout(function () {
-          window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
-          }, 10000);
-      });
+    // console.log("final save data array: ",final);
+    //   console.log("columnData,,,,,",columnData);
+    //   console.log("lockData ||| ",lockData);
+      if(lockData?.length>0){
+        await saveRequest(GYDE_SURVEY_TEMPLATE, questionId, records)
+        .then((res) => {
+          console.log("json column data:",columnData?.length);
+          if (!res?.error) {
+            saveColumnData(GYDE_SURVEY_TEMPLATE,questionId,columnData).then((res)=>{
+              if(!res?.error){
+                let notificationType = "INFO";
+                allDataFetch();
+                window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(saveDataNotify, notificationType);
+                setTimeout(function () {
+                window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
+                }, 10000);
+              }
+            })     
+          }
+        })
+        .catch((err) => {
+          let notificationType = "ERROR";
+          window.parent.Xrm.Page.ui.formContext.ui.setFormNotification(saveDataError, notificationType);
+          setTimeout(function () {
+            window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
+            }, 10000);
+        });
+      }
   };
 
   interface DataType {
@@ -487,6 +493,7 @@ const CustomTable: React.FC = () => {
             dataSource={dataSource}
             rowSelection={{ ...rowSelection }}
             pagination={false}
+            tableLayout="fixed"
             scroll={{ x: 'max-content', y: 'calc(100vh - 450px)' }}
             sticky
             loading={loading}
@@ -509,9 +516,7 @@ const CustomTable: React.FC = () => {
               disabled={isDisable}
             >
               Save
-            </Button>
-
-            
+            </Button>            
           </Form.Item>
         </div>
       </Form>

@@ -48,10 +48,10 @@ export const generateColumns = (
 
     dataIndex: 'hidden',
     width: 'auto',
-    render: () => null,
+    render: () => (<div className="hidden-column"></div>),
   };
   const updatedColumns =  [...columnConfig, obj];
-  const dynamicColumns: ColumnsType<any> = updatedColumns?.map(
+  const dynamicColumns : ColumnsType<any> = updatedColumns?.map(
     (column: any, num: any) => {
       const { id, order,guid ,datatype, data, validationData, width } = column;
       const col = savedColumns?.find((item:any)=>item?.guid==guid);
@@ -63,7 +63,7 @@ export const generateColumns = (
         title = (
           <span key={order} className="flex-wrap"> {id}   
             <Checkbox  
-              key={id +`${col}`}
+              key={id}
               disabled={isDisabled}
               defaultChecked={col ? !col?.iseditable : !column?.iseditable}
               onChange={(e) => setIsDisabled( id, e.target.checked)}>
@@ -74,7 +74,7 @@ export const generateColumns = (
         columnRender = (item: any, record: any, index: number) => {
           return (
             <Form.Item
-              key={index +`${col}`} // Add a unique key to force a re-render
+              key={index} // Add a unique key to force a re-render
               name={[index, `${id}`]}
               initialValue={response[index]?.[col?.id]}
               rules={[
@@ -111,10 +111,9 @@ export const generateColumns = (
             validationInputs,
             validationData
           );
-          console.log("showOptions//",showOptions);
           return (
             <Form.Item
-              key={index +`${col}`} // Add a unique key to force a re-render
+              key={index} // Add a unique key to force a re-render
               name={[index, `${id}`]}
               initialValue={showOptions ? response[index]?.[col?.id] :null}
               rules={[
@@ -135,7 +134,7 @@ export const generateColumns = (
         columnRender = (item: any, record: any, index: number) => {
           return (
             <Form.Item
-              key={index +`${col}`} // Add a unique key to force a re-render
+              key={index} // Add a unique key to force a re-render
               name={[index, `${id}`]}
               initialValue={response[index]?.[col?.id]}
               // validateTrigger={["onChange", "onBlur"]} // Add validateTrigger to trigger validation on input change and blur
@@ -173,7 +172,7 @@ export const generateColumns = (
           const defaultDayjs: Dayjs = dayjs(defaultDate);
           return (
             <Form.Item
-              key={index +`${col}`} // Add a unique key to force a re-render
+              key={index} // Add a unique key to force a re-render
               name={[index, `${id}`]}
               rules={[
                 {
@@ -203,9 +202,11 @@ export const generateColumns = (
         };
       }
       return {
-        title: datatype === String.name ? title : id,    
+        title: datatype === String.name ? title : id,
+        columnTitle: id,    
         width: colWidth,
         dataIndex: order,
+        ellipsis:true,
         render: columnRender,
       };
     }
