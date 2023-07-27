@@ -1,5 +1,6 @@
 
 export const GYDE_SURVEY_TEMPLATE ="gyde_surveytemplatechaptersectionquestion";
+export const GYDE_GRID_QUESTION = "gyde_surveytemplatequestiongridcolumn";
 
 export const Numeric = {name:'Numeric', value:528670000}
 export const String = {name:'String', value:528670001}

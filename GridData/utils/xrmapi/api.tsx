@@ -27,7 +27,7 @@ export const fetchRequest = async (
 ): Promise<any> => {
   try {
     const result = await window.parent.Xrm.WebApi.retrieveRecord(entityLogicalName,id,columnsNames);
-    console.log("api result : ", result);
+    // console.log("api result : ", result);
     return { error: false, data: result, loading: false };
   } catch (error: any) {
     // handle error conditions
@@ -55,8 +55,23 @@ export const saveColumnData = async (
   columnData:any
 ): Promise<any> => {
   try {
-    console.log("column Data with is editable", columnData)
+    // console.log("column Data with is editable", columnData)
     const result = await window.parent.Xrm.WebApi.updateRecord(entityLogicalName,id,{"gyde_jsoncolumn":columnData});
+    return { error: false, data: result, loading: false };
+  } catch (error: any) {
+    // handle error conditions
+    return { error: true, data: [], loading: false };
+  }
+};
+
+export const retrieveColumnDetails = async (
+  entityLogicalName: any,
+  id: string,
+): Promise<any> => {
+  try {
+    // console.log("column Data with is editable", columnData)
+    const result = await window.parent.Xrm.WebApi.retrieveMultipleRecords(entityLogicalName, `?$select=gyde_columnwidth,gyde_defaultcolumnwidth,gyde_isdontallowduplicates,gyde_maxlength,gyde_maxvalue,gyde_minlength,gyde_minvalue,gyde_numberofdecimalplaces&$filter=_gyde_surveytemplatequestion_value eq ${id}`);
+    console.log(" result", result );
     return { error: false, data: result, loading: false };
   } catch (error: any) {
     // handle error conditions

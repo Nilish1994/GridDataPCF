@@ -1,8 +1,8 @@
 import moment from "moment";
 import {stringReplace} from "../utils/StringReplace"
 
-export const validationHandler = (_: any, value: any, validationData: any, isDate?: boolean, allData?: any,messages?:any) => {
-  console.log('validation data ===> ', validationData);
+export const validationHandler = (_: any, value: any, validationData: any, isDate?: boolean, allData?: any,messages?:any, column?:any) => {
+  console.log('validation data ===> ', validationData, column);
 
   const stringValue = value;
   // && value.toString();
@@ -34,26 +34,26 @@ export const validationHandler = (_: any, value: any, validationData: any, isDat
    }
 
   if ((value?.toString()?.split(".")[1] || "")?.length) {
-    const decimalPoints = (value.toString().split(".")[1] || "").length;
+    const decimalPoints = (value?.toString().split(".")[1] || "").length;
 
-    if (decimalPoints > validationData?.numberOfDecimalPlaces) {
+    if (decimalPoints > validationData?.numberOfDecimalPlaces && validationData?.minValue) {
       const msg = stringReplace(messages?.decimalValidation ,validationData?.numberOfDecimalPlaces);
       return Promise.reject(msg)
     }
   }
 
-  if (validationData?.allowDuplicates) {
+  if (validationData?.allowDuplicates) { 
     if (isDate) {
       const valueDate = moment().format('YYYY-MM-DD');
-      const columnName = _?.field.split('.')[1];
-      
+      const columnName = _?.field?.split('.')[1];
+      const colIndex = Object.keys(allData[0])?.filter((item:any)=>item != "key")?.[column];
       let count = 0;
       if (allData && allData.length > 0) {
         allData.map((dataValue: any) => {
-          if(typeof dataValue[columnName] === "object"){
-            dataValue[columnName] = moment(dataValue[columnName]?.$d.toDateString()).format("YYYY-MM-DD");
+          if(typeof dataValue[colIndex] === "object"){
+            dataValue[colIndex] = moment(dataValue[colIndex]?.$d?.toDateString()).format("YYYY-MM-DD");
           }
-          if ( moment(dataValue[columnName]).format('YYYY-MM-DD') == moment(value).format('YYYY-MM-DD')) {
+          if ( moment(dataValue[colIndex]).format('YYYY-MM-DD') == moment(value).format('YYYY-MM-DD')) {
             count++;
           }
         });
@@ -63,12 +63,13 @@ export const validationHandler = (_: any, value: any, validationData: any, isDat
       }
       
     } else {
-      const columnName = _?.field.split('.')[1];
-      
+      // const columnName = _?.field.split('.')[0];
+      const colIndex = Object.keys(allData[0])?.filter((item:any)=>item != "key")?.[column];
       let count = 0;
       if (allData && allData.length > 0) {
         allData.map((dataValue: any) => {
-          if (dataValue[columnName] == value) {
+          // console.log("compare string", dataValue, value)
+          if (dataValue[colIndex] == value) {
             count++;
           }
         });

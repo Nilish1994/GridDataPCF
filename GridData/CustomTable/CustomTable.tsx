@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 import { Button, Form, Table, } from "antd";
+import dayjs, { Dayjs } from "dayjs";
 import { generateColumns } from "../utils/GenerateColumns";
 import ColumnsDetails from "../ColumnsDetails.json";
-import { fetchRecordId, fetchRequest, saveColumnData, saveRequest } from "../utils/xrmapi/api";
-import { GYDE_SURVEY_TEMPLATE, SUCCESS_COLOUR_CODE } from "../constants/Constants";
-import moment from "moment";
+import { fetchRecordId, fetchRequest, retrieveColumnDetails, saveColumnData, saveRequest } from "../utils/xrmapi/api";
+import { GYDE_GRID_QUESTION, GYDE_SURVEY_TEMPLATE, SUCCESS_COLOUR_CODE } from "../constants/Constants";
 
 interface Item {
   key: string;
@@ -34,17 +34,20 @@ const CustomTable: React.FC = () => {
   const [savedColumns, setSavedColumns] = useState<any>([]);
   const [isDisable, setIsDisable] = useState(false);
   const [filteredCol, setFilteredCol] = useState();
+  const [deleteTrigger, setDeleteTrigger] = useState(false);
   const xx: any = [
     [
       {
-        "Col1": "asfasfa",
+        "key":0,
+        "Col1": "asfasfaa",
         "Col2": "monday",
         "Tier": "N",
         "Col3": 2,
-        "Col4": "2023-05-01"
+        "Col4": "2023-05-14"
     },
     {
-        "Col1": "afasf",
+        "key":1,
+        "Col1": "asfasfa",
         "Col2": "tuesday",
         "Tier": "Y",
         "Col3": 3,
@@ -53,116 +56,19 @@ const CustomTable: React.FC = () => {
   ],
   [
       {
-          "id": "Col1",
-          "order": "name",
-          "datatype": "String",
-          "guid": "acAqwy54352Abvd",
-          "validationData": {
-              "allowDuplicates": true,
-              "isMandatory": true,
-              "maxLength": 10,
-              "maxValue": 0,
-              "minLength": 4,
-              "minValue": 0,
-              "numberOfDecimalPlaces": 0
-          },
-          "width": 200,
-          "iseditable": true
+        "guid": "acAqwy54352Abvd",   
       },
       {
-          "id": "Col2",
-          "order": "age",
-          "datatype": "List",
-          "guid": "acwewy54352Abvd",
-          "data": [
-              {
-                  "value": "monday",
-                  "label": "Monday"
-              },
-              {
-                  "value": "tuesday",
-                  "label": "Tuesday"
-              },
-              {
-                  "value": "wednesday",
-                  "label": "Wednesday"
-              },
-              {
-                  "value": "thursday",
-                  "label": "Thursday"
-              },
-              {
-                  "value": "friday",
-                  "label": "Friday"
-              }
-          ],
-          "validationData": {
-              "allowDuplicates": false,
-              "isMandatory": true,
-              "maxLength": 0,
-              "maxValue": 0,
-              "minLength": 0,
-              "minValue": 0,
-              "numberOfDecimalPlaces": 0
-          },
-          "width": 150
+        "guid": "acwewy54352Abvd",
       },
       {
-          "id": "Tier",
-          "order": "address",
-          "datatype": "List",
-          "guid": "acyywy54352Abvd",
-          "data": [
-              {
-                  "value": "Y",
-                  "label": "Yes"
-              },
-              {
-                  "value": "N",
-                  "label": "No"
-              }
-          ],
-          "validationData": {
-              "allowDuplicates": true,
-              "isMandatory": true,
-              "maxLength": 0,
-              "maxValue": 0,
-              "minLength": 0,
-              "minValue": 0,
-              "numberOfDecimalPlaces": 0
-          },
-          "width": 150
+        "guid": "acyywy54352Abvd",
       },
       {
-          "id": "Col3",
-          "order": "name2",
-          "datatype": "Numeric",
-          "guid": "acAqwy5435opbvd",
-          "validationData": {
-              "allowDuplicates": false,
-              "isMandatory": true,
-              "maxLength": 0,
-              "maxValue": 5,
-              "minLength": 0,
-              "minValue": 1,
-              "numberOfDecimalPlaces": 0
-          },
-          "width": 50
+        "guid": "acAqwy5435opbvd",
       },
       {
-          "id": "Col4",
-          "order": "name3",
-          "datatype": "Date",
-          "guid": "acAqwy543cxAbvd",
-          "validationData": {
-              "allowDuplicates": true,
-              "isMandatory": true,
-              "maxLength": 0,
-              "maxValue": 0,
-              "minLength": 0,
-              "minValue": 0,
-              "numberOfDecimalPlaces": 0
-          }
+        "guid": "acAqwy543cxAbvd",
       }
   ]
   ];
@@ -176,7 +82,6 @@ const CustomTable: React.FC = () => {
   const [saveDataNotify, setSaveDataNotify] = useState<string>("Data saved Successfully");
   const [saveDataError, setSaveDataError] = useState<string>("Saving Error. Please try again");
   const [commonError, setCommonError] = useState<string>("Something went wrong. Please try again");
-
 
   const loadResourceString = async () => {
     const url =
@@ -246,9 +151,30 @@ const CustomTable: React.FC = () => {
             if (typeof tableData == "undefined") {
               tableData = [];
             }
-
-            console.log("jsonParse ===>", jsonParse);
-            console.log("jsonData ===>", tableData);
+            const restColumnData = await retrieveColumnDetails(GYDE_GRID_QUESTION,id?.data);
+            const newColumnData = jsonParse?.map((item:any)=> {
+            const completeData =  restColumnData?.data?.entities?.find((val:any)=> val?.gyde_surveytemplatequestiongridcolumnid == item?.guid);
+              if(completeData){
+                  return {
+                    ...item,
+                    validationData:{
+                      allowDuplicates:completeData?.gyde_isdontallowduplicates,
+                      isMandatory:completeData?.gyde_isdontallowduplicates,
+                      maxLength:completeData?.gyde_maxlength,
+                      maxValue:completeData?.gyde_maxvalue,
+                      minLength:completeData?.gyde_minlength,
+                      minValue:completeData?.gyde_minvalue,
+                      numberOfDecimalPlaces:completeData?.gyde_numberofdecimalplaces
+                    },
+                    width:completeData?.gyde_columnwidth
+                  }           
+              }
+              // console.log("full data set",newColumnData)  ; 
+            })
+            // console.log("restColumnData", restColumnData);
+            // console.log("new column Details", newColumnData);
+            // console.log("jsonParse ===>", jsonParse);
+            // console.log("jsonData ===>", tableData);
 
             if (records.data.statuscode == 2 || records.data.statuscode == 528670001) {
               setIsDisable(true)
@@ -261,13 +187,12 @@ const CustomTable: React.FC = () => {
                 key: num,
               };
             });
-            
             setSavedColumns( tableData?.[1])
-            setDynamicColumns(jsonParse || []);
+            setDynamicColumns(newColumnData || []);
             setLockData(jsonParse);
             setDataSource(newData || []);
-            setInputValues(newData || []);
-            setColumnsData(jsonParse || [], newData || [], form, isDisable,tableData?.[1]);
+            setInputValues(newData || [])
+            setColumnsData(newColumnData || [], newData || [], form, isDisable,tableData?.[1]);
             setCount(count + 1);
             setLoading(false);
           })
@@ -281,7 +206,7 @@ const CustomTable: React.FC = () => {
               window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
               }, 10000);
           });
-        console.log("grid data....", getGridData);
+        // console.log("grid data....", getGridData);
       })
       .catch(() => {
         setLoading(false);
@@ -299,10 +224,51 @@ const CustomTable: React.FC = () => {
     // CALL WEBRESOURCES
     loadResourceString();
 
+    return(()=>{
+      localStorage.removeItem("inputData");
+      localStorage.removeItem("deletedKeys");
+    });
   }, []);
 
+  useEffect(() =>{
+    const data:any = localStorage.getItem("inputData");
+    const keys:any = localStorage.getItem("deletedKeys");
+    const convertedKey = JSON.parse(keys);
+    const convertedData = data  && JSON?.parse(data)?.filter((item:any)=>!convertedKey?.includes(item?.key));
+    // console.log("local storage data",convertedData);
+      convertedData && setInputValues(convertedData);
+      convertedData && setDataSource(convertedData);
+    const extractedIds = dynamicColumns?.map((obj:any) => obj.id);
+      const modifiedData:any = [];
+      (convertedData ? convertedData : inputValues)?.forEach((obj:any, index:number) => {
+        const newObj: any = { key: index };
+        extractedIds.forEach((id:any, num:number) => {
+          const columnId = Object.keys(obj)?.filter((item:any)=>item !== "key")?.[num];
+          if(columnId == id){             
+            if( obj[columnId]?.toString()?.includes("-") && typeof obj[columnId] != "number" ){
+              // console.log("date if id equal...",id, obj[id] );
+              newObj[id] = dayjs(obj[id]);
+            }else{
+              // console.log("columns with equal id...", id,obj[id] );
+              newObj[id] = obj[id];
+            }
+          }else{
+            if( obj[columnId]?.toString()?.includes("-") && typeof obj[columnId] != "number"){
+              console.log("date if id NOT equal...",id, obj[id] );
+              newObj[id] = dayjs(obj[columnId]);
+            }else{
+              newObj[id] = obj[columnId];
+            }
+          }
+        });
+        modifiedData.push(newObj);
+      });
+    form.setFieldsValue(modifiedData);
+    localStorage.removeItem("inputData");
+  },[deleteTrigger])
+
   useEffect(()=>{
-    form.resetFields(); 
+    form.resetFields();   
   },[filteredCol])
 
   useEffect(() => {
@@ -316,13 +282,14 @@ const CustomTable: React.FC = () => {
   // useEffect(() => {
   //   setDynamicColumns(ColumnsDetails);
   //   setDataSource(xx[0]);
+  //   setLockData(xx[1])
   //   setInputValues(xx[0]);
-  //   setColumnsData(ColumnsDetails, xx[0], form, savedColumns,xx[1]);
+  //   setColumnsData(ColumnsDetails, xx[0], form, isDisable, xx[1]);
   // }, []);
 
   const handleLockData = (columnName: string, value: boolean) => {
     setLockData(() => {
-      const newData = [...dynamicColumns];  
+      const newData = [...lockData];  
       const foundIndex = newData.findIndex((item) =>item.id === columnName);
       if (foundIndex !== -1) {
           // Update existing item if value is checked
@@ -366,18 +333,21 @@ const CustomTable: React.FC = () => {
     return obj;
   };
 
-  const handleDelete = (key: []) => {
-    const newData = dataSource.filter(
+  const handleDelete = async(key: []) => {
+    localStorage.setItem("deletedKeys",JSON.stringify(key));
+    const newData = await dataSource.filter(
       (item: any) => !key.some((rowKey) => rowKey === item.key)
     );
     setDataSource(newData);
+    setInputValues(newData);
+    // console.log("data after delete:", newData);
     setSelectedRowKeys([]);
-
     setTimeout(()=>{
       form.resetFields();
-    },1000)
+      setDeleteTrigger(!deleteTrigger);
+    },300);
   };
-
+ 
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
       setSelectedRowKeys(selectedRowKeys);
@@ -396,7 +366,7 @@ const CustomTable: React.FC = () => {
   const handleAdd = () => {
     const column = columns?.map((item: any) => item?.columnTitle);
     let modifiedObj = arrayToObj(column);
-    modifiedObj.key = dataSource?.length + 1;
+    modifiedObj = {key:dataSource?.length +1, ...modifiedObj};
     setDataSource([...dataSource, modifiedObj]);
     setCount(count + 1);
   };
@@ -405,24 +375,22 @@ const CustomTable: React.FC = () => {
     const convertedArray:any = Object.values(data);
     // const records = JSON.stringify(convertedArray);
     const columnData = JSON.stringify(lockData);
+    console.log("columns details", columnData);
     for (let index = 0; index < convertedArray.length; index++) {
       const obj : any = convertedArray[index];
       for (let key in obj ) {
-        console.log(`${key}: ${typeof obj[key]}`);
-        if(typeof obj[key] == "object" ){
-          convertedArray[index][key] = moment(obj[key]?.$d.toDateString()).format("YYYY-MM-DD") 
+        if(typeof obj[key] == "object" && obj[key] != undefined && obj[key] != null){
+          convertedArray[index][key] = convertedArray[index][key].format("YYYY-MM-DD") 
         }
       }     
     }
-    const final = [convertedArray, lockData];
+    const filteredGuid = lockData?.map((item:any)=>{return{guid:item?.guid}});
+    const final = [convertedArray, filteredGuid];
+    console.log("final object to save", final);
     const records = JSON.stringify(final);
-    // console.log("final save data array: ",final);
-    //   console.log("columnData,,,,,",columnData);
-    //   console.log("lockData ||| ",lockData);
       if(lockData?.length>0){
-        await saveRequest(GYDE_SURVEY_TEMPLATE, questionId, records)
+         saveRequest(GYDE_SURVEY_TEMPLATE, questionId, records)
         .then((res) => {
-          console.log("json column data:",columnData?.length);
           if (!res?.error) {
             saveColumnData(GYDE_SURVEY_TEMPLATE,questionId,columnData).then((res)=>{
               if(!res?.error){
@@ -456,7 +424,11 @@ const CustomTable: React.FC = () => {
   const handleValueChange = (changedValues: any, allValues: any) => {
     const data = form.getFieldsValue();
     const dataArray = Object.values(data);
-    setInputValues(dataArray);
+    const newDataArray = dataArray?.map((item:any,num:number)=>{return{key:num,...item}})
+    setInputValues(newDataArray);
+    // console.log("all data from form", data, "after object.value", dataArray);
+    // console.log(" Data stored to local Storage", newDataArray);
+    localStorage.setItem("inputData",JSON.stringify(newDataArray,(key,value)=>{return typeof value === 'undefined' ? null : value;}));
   };
 
   return (

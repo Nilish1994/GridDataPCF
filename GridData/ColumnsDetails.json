@@ -6,7 +6,7 @@
     "guid": "acAqwy54352Abvd",
     "validationData": {
       "allowDuplicates": true,
-      "isMandatory": true,
+      "isMandatory": false,
       "maxLength": 10,
       "maxValue": 0,
       "minLength": 4,
@@ -45,7 +45,7 @@
       }
     ],
     "validationData": {
-      "allowDuplicates": false,
+      "allowDuplicates": true,
       "isMandatory": true,
       "maxLength": 0,
       "maxValue": 0,
@@ -71,7 +71,7 @@
     ],
     "validationData": {
       "allowDuplicates": true,
-      "isMandatory": true,
+      "isMandatory": false,
       "maxLength": 0,
       "maxValue": 0,
       "minLength": 0,
@@ -86,7 +86,7 @@
     "datatype": "Numeric",
     "validationData": {
       "allowDuplicates": false,
-      "isMandatory": true,
+      "isMandatory": false,
       "maxLength": 0,
       "maxValue": 5,
       "minLength": 0,
@@ -96,13 +96,13 @@
     "width":360
   } ,
   {
-    "id": "Col4",
+    "id": "Coll4",
     "order": "name3",
     "guid": "acAqwy543cxAbvd",
     "datatype": "Date",
     "validationData": {
-      "allowDuplicates": true,
-      "isMandatory": true,
+      "allowDuplicates": false,
+      "isMandatory": false,
       "maxLength": 0,
       "maxValue": 0,
       "minLength": 0,
