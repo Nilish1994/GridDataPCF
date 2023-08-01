@@ -191,8 +191,8 @@ const CustomTable: React.FC = () => {
             setDynamicColumns(newColumnData || []);
             setLockData(jsonParse);
             setDataSource(newData || []);
-            setInputValues(newData || [])
-            setColumnsData(newColumnData || [], newData || [], form, isDisable,tableData?.[1]);
+            newData?.length>0 && setInputValues(newData);
+            setColumnsData(newColumnData || [], newData || [], form, isDisable,tableData?.[1],newData);
             setCount(count + 1);
             setLoading(false);
           })
@@ -206,7 +206,6 @@ const CustomTable: React.FC = () => {
               window.parent.Xrm.Page.ui.formContext.ui.clearFormNotification();
               }, 10000);
           });
-        // console.log("grid data....", getGridData);
       })
       .catch(() => {
         setLoading(false);
@@ -235,9 +234,8 @@ const CustomTable: React.FC = () => {
     const keys:any = localStorage.getItem("deletedKeys");
     const convertedKey = JSON.parse(keys);
     const convertedData = data  && JSON?.parse(data)?.filter((item:any)=>!convertedKey?.includes(item?.key));
-    // console.log("local storage data",convertedData);
-      convertedData && setInputValues(convertedData);
-      convertedData && setDataSource(convertedData);
+      convertedData?.length>0 && setInputValues(convertedData);
+      convertedData?.length>0 && setDataSource(convertedData);
     const extractedIds = dynamicColumns?.map((obj:any) => obj.id);
       const modifiedData:any = [];
       (convertedData ? convertedData : inputValues)?.forEach((obj:any, index:number) => {
@@ -272,11 +270,13 @@ const CustomTable: React.FC = () => {
   },[filteredCol])
 
   useEffect(() => {
-    setColumnsData(dynamicColumns || [], dataSource || [], form,isDisable,savedColumns);
+    if(inputValues?.length>0){
+      setColumnsData(dynamicColumns || [], dataSource || [], form,isDisable,savedColumns,inputValues);
+    }
   }, [inputValues]);
 
   useEffect(() => {
-    setColumnsData(dynamicColumns || [], dataSource || [], form, isDisable,savedColumns);   
+    setColumnsData(dynamicColumns || [], dataSource || [], form, isDisable,savedColumns,inputValues);   
   }, [lockData, dataSource])
 
   // useEffect(() => {
@@ -304,7 +304,8 @@ const CustomTable: React.FC = () => {
     dataSource: any,
     formData: any,
     disable?: boolean,
-    savedColumns?:any
+    savedColumns?:any,
+    inputValues?:any,
   ) => {
     const columns = generateColumns(
       dynamicColumns,
@@ -340,7 +341,6 @@ const CustomTable: React.FC = () => {
     );
     setDataSource(newData);
     setInputValues(newData);
-    // console.log("data after delete:", newData);
     setSelectedRowKeys([]);
     setTimeout(()=>{
       form.resetFields();
@@ -375,7 +375,6 @@ const CustomTable: React.FC = () => {
     const convertedArray:any = Object.values(data);
     // const records = JSON.stringify(convertedArray);
     const columnData = JSON.stringify(lockData);
-    console.log("columns details", columnData);
     for (let index = 0; index < convertedArray.length; index++) {
       const obj : any = convertedArray[index];
       for (let key in obj ) {
@@ -384,9 +383,9 @@ const CustomTable: React.FC = () => {
         }
       }     
     }
-    const filteredGuid = lockData?.map((item:any)=>{return{guid:item?.guid}});
+    const filteredGuid = dynamicColumns?.map((item:any)=>{return{guid:item?.guid}});
     const final = [convertedArray, filteredGuid];
-    console.log("final object to save", final);
+    console.log("final object to save:", final,"columns:",columnData);
     const records = JSON.stringify(final);
       if(lockData?.length>0){
          saveRequest(GYDE_SURVEY_TEMPLATE, questionId, records)
@@ -425,9 +424,7 @@ const CustomTable: React.FC = () => {
     const data = form.getFieldsValue();
     const dataArray = Object.values(data);
     const newDataArray = dataArray?.map((item:any,num:number)=>{return{key:num,...item}})
-    setInputValues(newDataArray);
-    // console.log("all data from form", data, "after object.value", dataArray);
-    // console.log(" Data stored to local Storage", newDataArray);
+    newDataArray?.length>0 && setInputValues(newDataArray);
     localStorage.setItem("inputData",JSON.stringify(newDataArray,(key,value)=>{return typeof value === 'undefined' ? null : value;}));
   };
 

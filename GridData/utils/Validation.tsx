@@ -2,11 +2,10 @@ import moment from "moment";
 import {stringReplace} from "../utils/StringReplace"
 
 export const validationHandler = (_: any, value: any, validationData: any, isDate?: boolean, allData?: any,messages?:any, column?:any) => {
-  console.log('validation data ===> ', validationData, column);
 
   const stringValue = value;
   // && value.toString();
-  console.log("validation value",value)
+  // console.log("validation value",value)
 
   // Check if the value is null or empty
   if (validationData?.isMandatory) {
@@ -16,7 +15,7 @@ export const validationHandler = (_: any, value: any, validationData: any, isDat
   }
 
    // Check if the value is within the specified length range
-  if (!(validationData.minLength == 0 && validationData.maxLength == 0)) {
+  if (!(validationData.minLength == 0 && validationData.maxLength == 0 || validationData.maxLength == null || validationData.maxLength == undefined) ) {
     if (
       stringValue?.length < validationData?.minLength ||
       stringValue?.length > validationData?.maxLength
@@ -26,7 +25,7 @@ export const validationHandler = (_: any, value: any, validationData: any, isDat
     }
   }
 
-  if (!(validationData.minValue == 0)) {
+  if (!(validationData.minValue == 0 || validationData.minValue == null || validationData.minValue == undefined )) {
     if (value < validationData?.minValue || value > validationData?.maxValue) {
       const msg = stringReplace(messages?.numberValueValidation ,validationData?.minValue,validationData?.maxValue);
       return Promise.reject(msg);
@@ -51,9 +50,9 @@ export const validationHandler = (_: any, value: any, validationData: any, isDat
       if (allData && allData.length > 0) {
         allData.map((dataValue: any) => {
           if(typeof dataValue[colIndex] === "object"){
-            dataValue[colIndex] = moment(dataValue[colIndex]?.$d?.toDateString()).format("YYYY-MM-DD");
+            dataValue[colIndex] = dataValue[colIndex]?.format("YYYY-MM-DD");
           }
-          if ( moment(dataValue[colIndex]).format('YYYY-MM-DD') == moment(value).format('YYYY-MM-DD')) {
+          if ( dataValue[colIndex]?.format('YYYY-MM-DD') == value?.format('YYYY-MM-DD')) {
             count++;
           }
         });

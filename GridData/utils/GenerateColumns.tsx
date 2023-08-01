@@ -1,10 +1,11 @@
 import React from "react";
 import type { ColumnsType } from "antd/es/table";
 import { DatePicker, InputNumber, Input, Select, Form, Checkbox } from "antd";
-import { Date, List, Numeric, String } from "../constants/Constants";
+import { DateCol, List, Numeric, String } from "../constants/Constants";
 import { validationHandler } from "./Validation";
-import dayjs, { Dayjs } from "dayjs";
+// import dayjs, { Dayjs } from "dayjs";
 import moment from "moment";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 
@@ -43,7 +44,6 @@ export const generateColumns = (
       // because if not data inserted based on order of the attributes found in the object  
       const col = response && Object?.keys(response[0] || [])?.filter((item:any)=>item !== "key")?.[index];
       // console.log("row details", row);
-      // console.log("col details..", col);
       isColumnFetched(col);   
       let colWidth = 0;
       let columnRender;
@@ -74,7 +74,7 @@ export const generateColumns = (
                       value,
                       validationData,
                       false,
-                      validationInputs,
+                      validationInputs?.length>0 && validationInputs,
                       messages,
                       num
                     );
@@ -139,7 +139,7 @@ export const generateColumns = (
                       value,
                       validationData,
                       false,
-                      validationInputs,
+                      validationInputs?.length>0 && validationInputs,
                       messages,
                       num
                     );
@@ -155,14 +155,14 @@ export const generateColumns = (
             </Form.Item>
           );
         };
-      } else if (datatype === Date.name) {
+      } else if (datatype === DateCol.name) {
         colWidth = width   ? width : 160;
         columnRender = (item: any, record: any, index: number) => {
           // Parse the default date string into a moment object
-          const date: any = moment();
-          const defaultDate: string =  response[index]?.[col] || date;
+          // const date: any = moment().format("YYYY-MM-DD");
+          const defaultDate: string =  response[index]?.[col];
           // Parse the default date string into a Dayjs object
-          const defaultDayjs: Dayjs = dayjs(defaultDate);
+          const defaultDayjs:any = defaultDate ? moment(defaultDate): dayjs();
           return (
             <Form.Item
               key={index} // Add a unique key to force a re-render
@@ -172,10 +172,10 @@ export const generateColumns = (
                   validator: (_: any, value: any) => {
                     return validationHandler(
                       _,
-                       value?.format("YYYY-MM-DD"),
+                      value?.format("YYYY-MM-DD"),
                       validationData,
                       true,
-                      validationInputs,
+                      validationInputs?.length>0 && validationInputs,
                       messages,
                       num
                     );
