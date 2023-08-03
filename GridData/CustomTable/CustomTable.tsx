@@ -229,6 +229,11 @@ const CustomTable: React.FC = () => {
     });
   }, []);
 
+  const isValidDateFormat = (value: string): boolean => {
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    return regex.test(value);
+  };
+
   useEffect(() =>{
     const data:any = localStorage.getItem("inputData");
     const keys:any = localStorage.getItem("deletedKeys");
@@ -243,7 +248,7 @@ const CustomTable: React.FC = () => {
         extractedIds.forEach((id:any, num:number) => {
           const columnId = Object.keys(obj)?.filter((item:any)=>item !== "key")?.[num];
           if(columnId == id){             
-            if( obj[columnId]?.toString()?.includes("-") && typeof obj[columnId] != "number" ){
+            if( obj[columnId]?.toString()?.includes("-") && typeof obj[columnId] == "string" && isValidDateFormat(obj[columnId])){
               // console.log("date if id equal...",id, obj[id] );
               newObj[id] = dayjs(obj[id]);
             }else{
@@ -251,8 +256,8 @@ const CustomTable: React.FC = () => {
               newObj[id] = obj[id];
             }
           }else{
-            if( obj[columnId]?.toString()?.includes("-") && typeof obj[columnId] != "number"){
-              console.log("date if id NOT equal...",id, obj[id] );
+            if( obj[columnId]?.toString()?.includes("-") && typeof obj[columnId] != "string" && isValidDateFormat(obj[columnId])){
+              // console.log("date if id NOT equal...",id, obj[id] );
               newObj[id] = dayjs(obj[columnId]);
             }else{
               newObj[id] = obj[columnId];
@@ -371,6 +376,14 @@ const CustomTable: React.FC = () => {
     setCount(count + 1);
   };
 
+  const replaceUndefinedWithNull = (obj:any) => {
+    Object?.keys(obj)?.forEach((key) => {
+      if (obj[key] === undefined) {
+        obj[key] = null;
+      }
+    });
+  };
+
   const handleSave = async (data: any) => {
     const convertedArray:any = Object.values(data);
     // const records = JSON.stringify(convertedArray);
@@ -383,6 +396,9 @@ const CustomTable: React.FC = () => {
         }
       }     
     }
+    convertedArray?.forEach((item:any) => {
+      replaceUndefinedWithNull(item);
+    });
     const filteredGuid = dynamicColumns?.map((item:any)=>{return{guid:item?.guid}});
     const final = [convertedArray, filteredGuid];
     console.log("final object to save:", final,"columns:",columnData);

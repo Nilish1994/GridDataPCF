@@ -162,7 +162,7 @@ export const generateColumns = (
           // const date: any = moment().format("YYYY-MM-DD");
           const defaultDate: string =  response[index]?.[col];
           // Parse the default date string into a Dayjs object
-          const defaultDayjs:any = defaultDate ? moment(defaultDate): dayjs();
+          const defaultDayjs:any = defaultDate ? dayjs(defaultDate): dayjs();
           return (
             <Form.Item
               key={index} // Add a unique key to force a re-render
